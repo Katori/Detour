@@ -45,6 +45,9 @@ namespace DetourServer
             }
             app.UseWebSockets();
 
+            Server.ServerReceivedMessage += DetourServer_ServerReceivedData;
+            Server.RegisterHandler(1, typeof(ClientSentTestMessage), OnClientSentTestMessage);
+
             app.Use(async (context, next) =>
             {
                 if (context.Request.Path == "/ws")
@@ -52,8 +55,8 @@ namespace DetourServer
                     if (context.WebSockets.IsWebSocketRequest)
                     {
                         WebSocket webSocket = await context.WebSockets.AcceptWebSocketAsync();
-                        var newClient = new DetourClientContainer(context, webSocket);
-                        DetourServer.AddClient(newClient);
+                        var newClient = new ClientContainer(context, webSocket);
+                        Server.AddClient(newClient);
                         await newClient.ClientProcess();
                     }
                     else
@@ -68,6 +71,25 @@ namespace DetourServer
             });
             app.UseHttpsRedirection();
             app.UseMvc();
+
+            
+        }
+
+        private void DetourServer_ServerReceivedData(string SenderAddr, dynamic ReceivedData)
+        {
+            // is this necessary? handlers can do all of this, we might not need this direct pipe
+        }
+
+        private void OnClientSentTestMessage(DetourMessage msg)
+        {
+            var testMsg = msg as ClientSentTestMessage;
+            Console.WriteLine("received some stuff: " + testMsg.TestString);
+        }
+
+        [System.Serializable]
+        public class ClientSentTestMessage : DetourMessage
+        {
+            public string TestString;
         }
     }
 
