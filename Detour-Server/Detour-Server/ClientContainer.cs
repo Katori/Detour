@@ -24,6 +24,11 @@ namespace DetourServer
         private string JSONBuffer;
         private byte[] MessageBuffer;
 
+        JsonSerializerSettings jsonSettings = new JsonSerializerSettings()
+        {
+            TypeNameHandling = TypeNameHandling.Objects
+        };
+
         public ClientContainer(HttpContext _Context, WebSocket _Socket)
         {
             Id = _Context.Connection.Id;
@@ -42,7 +47,7 @@ namespace DetourServer
                 {
                     foreach (var item in EnqueuedMessagesToSend)
                     {
-                        JSONBuffer = JsonConvert.SerializeObject(item);
+                        JSONBuffer = JsonConvert.SerializeObject(item, jsonSettings);
                         MessageBuffer = Encoding.UTF8.GetBytes(JSONBuffer);
                         await Socket.SendAsync(new ArraySegment<byte>(MessageBuffer, 0, MessageBuffer.Length), WebSocketMessageType.Text, true, CancellationToken.None);
                     }
