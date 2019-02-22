@@ -5,15 +5,11 @@ using System.Threading.Tasks;
 
 namespace DetourServer
 {
-    public delegate void MessageEventHandler(DetourMessage netMsg);
-
     public static class Server
     {
         public static Dictionary<string, ClientContainer> Clients = new Dictionary<string, ClientContainer>();
 
-        public static Dictionary<int, MessageEventHandler> MessageCodeToHandler = new Dictionary<int, MessageEventHandler>();
-
-        public static Dictionary<int, Type> MessageCodeToType = new Dictionary<int, Type>();
+        public static Dictionary<int, MessageDefinition> MessageTypeToMessageDefinition = new Dictionary<int, MessageDefinition>();
 
         public static event Action<string, DetourMessage> ServerReceivedMessage;
 
@@ -38,8 +34,7 @@ namespace DetourServer
         /// </summary> 
         public static void RegisterHandler(int HandlerId, Type MessageType, MessageEventHandler Handler)
         {
-            MessageCodeToHandler.Add(HandlerId, Handler);
-            MessageCodeToType.Add(HandlerId, MessageType);
+            MessageTypeToMessageDefinition.Add(HandlerId, new MessageDefinition { EventHandler = Handler, Type = MessageType });
         }
 
         /// <summary>  
@@ -47,7 +42,7 @@ namespace DetourServer
         /// </summary>
         internal static void ReceivedMessage(string Address, DetourMessage v)
         {
-            MessageCodeToHandler[v.MessageType](v);
+            MessageTypeToMessageDefinition[v.MessageType].EventHandler(v);
             ServerReceivedMessage.Invoke(Address, v);
         }
     }

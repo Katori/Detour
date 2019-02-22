@@ -59,7 +59,7 @@ namespace DetourServer
                 JObject jObject = JObject.Parse(JSONBuffer);
                 if (jObject.HasValues && jObject.ContainsKey("MessageType"))
                 {
-                        Server.ReceivedMessage(Id, (DetourMessage)jObject.ToObject(Type.GetType(Server.MessageCodeToType[jObject.Value<int>("MessageType")].FullName)));
+                        Server.ReceivedMessage(Id, (DetourMessage)jObject.ToObject(Type.GetType(Server.MessageTypeToMessageDefinition[jObject.Value<int>("MessageType")].Type.FullName)));
                 }
             }
             await Socket.CloseAsync(result.CloseStatus.Value, result.CloseStatusDescription, CancellationToken.None);

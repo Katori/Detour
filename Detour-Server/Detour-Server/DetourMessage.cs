@@ -6,7 +6,5 @@
         public int MessageType;
         public string DetourVersion;
         public string ApplicationVersion;
-
-        public DetourMessage() { }
     }
 }
