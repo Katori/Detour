@@ -1,0 +1,10 @@
+{
+    "name": "Detour-Examples",
+    "references": [
+        "Detour"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false
+}
