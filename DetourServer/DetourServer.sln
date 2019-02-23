@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.106
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DetourServer", "DetourServer\DetourServer.csproj", "{48497E8A-1AE6-4BBD-B8BF-11A1930C24EC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DetourServerExample", "DetourServerExample\DetourServerExample.csproj", "{DABD9AAD-15E8-4E67-97D6-6D585D2857B7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{48497E8A-1AE6-4BBD-B8BF-11A1930C24EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48497E8A-1AE6-4BBD-B8BF-11A1930C24EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48497E8A-1AE6-4BBD-B8BF-11A1930C24EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48497E8A-1AE6-4BBD-B8BF-11A1930C24EC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DABD9AAD-15E8-4E67-97D6-6D585D2857B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DABD9AAD-15E8-4E67-97D6-6D585D2857B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DABD9AAD-15E8-4E67-97D6-6D585D2857B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DABD9AAD-15E8-4E67-97D6-6D585D2857B7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CE12DDFD-F158-4100-A863-33D6938DC601}
+	EndGlobalSection
+EndGlobal

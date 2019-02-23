@@ -16,9 +16,10 @@ namespace DetourServer
         /// <summary>  
         ///  Adds a client to the Dictionary of clients.
         /// </summary> 
-        public static void AddClient(ClientContainer Client)
+        public static ClientContainer AddClient(ClientContainer Client)
         {
             Clients.Add(Client.Id, Client);
+            return Clients[Client.Id];
         }
 
         /// <summary>  

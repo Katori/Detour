@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿#if ASP
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using System.Globalization;
 using System.Net.WebSockets;
@@ -6,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace DetourServer.Middleware
 {
-    public class DetourServer
+    public class AspServer
     {
         private readonly RequestDelegate _next;
 
-        public DetourServer(RequestDelegate next)
+        public AspServer(RequestDelegate next)
         {
             _next = next;
         }
@@ -22,7 +23,7 @@ namespace DetourServer.Middleware
                 if (context.WebSockets.IsWebSocketRequest)
                 {
                     WebSocket webSocket = await context.WebSockets.AcceptWebSocketAsync();
-                    var newClient = new ClientContainer(context, webSocket);
+                    var newClient = new AspClientContainer(context, webSocket);
                     Server.AddClient(newClient);
                     await newClient.ClientProcess();
                 }
@@ -43,7 +44,8 @@ namespace DetourServer.Middleware
         public static IApplicationBuilder UseDetourServer(
             this IApplicationBuilder builder)
         {
-            return builder.UseMiddleware<DetourServer>();
+            return builder.UseMiddleware<AspServer>();
         }
     }
 }
+#endif
