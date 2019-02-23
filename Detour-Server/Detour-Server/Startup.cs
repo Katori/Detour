@@ -1,18 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.WebSockets;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
+using DetourServer.Middleware;
 
 namespace DetourServer
 {
@@ -48,27 +39,7 @@ namespace DetourServer
             Server.ServerReceivedMessage += DetourServer_ServerReceivedData;
             Server.RegisterHandler(1, typeof(ClientSentTestMessage), OnClientSentTestMessage);
 
-            app.Use(async (context, next) =>
-            {
-                if (context.Request.Path == "/ws")
-                {
-                    if (context.WebSockets.IsWebSocketRequest)
-                    {
-                        WebSocket webSocket = await context.WebSockets.AcceptWebSocketAsync();
-                        var newClient = new ClientContainer(context, webSocket);
-                        Server.AddClient(newClient);
-                        await newClient.ClientProcess();
-                    }
-                    else
-                    {
-                        context.Response.StatusCode = 400;
-                    }
-                }
-                else
-                {
-                    await next();
-                }
-            });
+            app.UseDetourServer();
             app.UseHttpsRedirection();
             app.UseMvc();
 
@@ -83,7 +54,7 @@ namespace DetourServer
         private void OnClientSentTestMessage(DetourMessage msg)
         {
             var testMsg = msg as ClientSentTestMessage;
-            Console.WriteLine("received some stuff: " + testMsg.TestString);
+            System.Console.WriteLine("received some stuff: " + testMsg.TestString);
         }
 
         [System.Serializable]
