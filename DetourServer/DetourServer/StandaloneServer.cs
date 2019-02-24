@@ -20,8 +20,7 @@ namespace DetourServer
             try
             {
                 int port = 27416;
-                IList<string> supportedSubProtocols = new string[] { "chatV1", "chatV2", "chatV3" };
-                using (WebServer server = new WebServer(_webSocketServerFactory, supportedSubProtocols))
+                using (WebServer server = new WebServer(_webSocketServerFactory))
                 {
                     await server.Listen(port);
                     Console.WriteLine($"Listening on port {port}");

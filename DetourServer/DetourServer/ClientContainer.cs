@@ -49,16 +49,30 @@ namespace DetourServer
 
                 result = await Socket.ReceiveAsync(new System.ArraySegment<byte>(buffer), CancellationToken.None);
 
-                JSONBuffer = Encoding.UTF8.GetString(buffer, 0, result.Count);
-                JObject jObject = JObject.Parse(JSONBuffer);
-                if (jObject.HasValues && jObject.ContainsKey("MessageType"))
+                if (result.Count > 0)
                 {
-                    //DetourMessage v = (DetourMessage)jObject.ToObject(System.Type.GetType(Server.MessageTypeToMessageDefinition[jObject.Value<int>("MessageType")].Type.FullName));
-                    DetourMessage v = (DetourMessage)jObject.ToObject(TypeExtensions.FindType(Server.MessageTypeToMessageDefinition[jObject.Value<int>("MessageType")].Type.FullName));
-                    Server.ReceivedMessage(Id, v);
+                    var msg = ProcessJsonIntoDetourMessage(buffer, result.Count);
+                    if (msg != null)
+                    {
+                        Server.ReceivedMessage(Id, msg);
+                    }
                 }
             }
             await Socket.CloseAsync(result.CloseStatus.Value, result.CloseStatusDescription, CancellationToken.None);
+        }
+
+        public DetourMessage ProcessJsonIntoDetourMessage(byte[] JsonBuffer, int ByteLength)
+        {
+            JSONBuffer = Encoding.UTF8.GetString(JsonBuffer, 0, ByteLength);
+            JObject jObject = JObject.Parse(JSONBuffer);
+            if (jObject.HasValues && jObject.ContainsKey("MessageType"))
+            {
+                return (DetourMessage)jObject.ToObject(TypeExtensions.FindType(Server.MessageTypeToMessageDefinition[jObject.Value<int>("MessageType")].Type.FullName));
+            }
+            else
+            {
+                return null;
+            }
         }
     }
 }
