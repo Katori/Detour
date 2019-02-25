@@ -1,11 +1,9 @@
-﻿#if ASP
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using System.Globalization;
 using System.Net.WebSockets;
 using System.Threading.Tasks;
 
-namespace DetourServer.Middleware
+namespace DetourServer.Asp
 {
     public class AspServer
     {
@@ -48,4 +46,3 @@ namespace DetourServer.Middleware
         }
     }
 }
-#endif

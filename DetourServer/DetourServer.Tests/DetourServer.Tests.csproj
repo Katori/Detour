@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DetourServer\DetourServer.csproj" />
+    <ProjectReference Include="..\DetourServer\DetourServerBase.csproj" />
   </ItemGroup>
 
 </Project>

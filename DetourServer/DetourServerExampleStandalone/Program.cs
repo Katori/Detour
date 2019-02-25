@@ -16,7 +16,7 @@ namespace DetourServerExample
         private static void OnClientSentTestMessage(DetourMessage msg)
         {
             var testMsg = msg as ClientSentTestMessage;
-            System.Console.WriteLine("received some stuff: " + testMsg.TestString);
+            System.Console.WriteLine("Received TestString: " + testMsg.TestString);
         }
 
         [System.Serializable]
