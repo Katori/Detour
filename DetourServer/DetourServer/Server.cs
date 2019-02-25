@@ -41,10 +41,21 @@ namespace DetourServer
         /// <summary>  
         ///  Called by the ClientContainer when message is received, runs it through the appropriate handler.
         /// </summary>
-        internal static void ReceivedMessage(string Address, DetourMessage v)
+        public static void ReceivedMessage(string Address, DetourMessage v)
         {
             MessageTypeToMessageDefinition[v.MessageType].EventHandler(v);
-            ServerReceivedMessage.Invoke(Address, v);
+            if (ServerReceivedMessage != null)
+            {
+                ServerReceivedMessage.Invoke(Address, v);
+            }
+        }
+
+        /// <summary>  
+        ///  Re-initializes Message Handlers (all handlers will be cleared)
+        /// </summary>
+        public static void ClearHandlers()
+        {
+            MessageTypeToMessageDefinition = new Dictionary<int, MessageDefinition>();
         }
     }
 }
