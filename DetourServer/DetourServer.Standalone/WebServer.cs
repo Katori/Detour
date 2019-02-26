@@ -133,6 +133,7 @@ namespace DetourServer
                 IPAddress localAddress = IPAddress.Any;
                 _listener = new TcpListener(localAddress, port);
                 _listener.Start();
+                Console.WriteLine($"Server started listening on port {port}");
                 while (true)
                 {
                     TcpClient tcpClient = await _listener.AcceptTcpClientAsync();

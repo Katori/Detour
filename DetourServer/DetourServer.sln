@@ -9,9 +9,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DetourServerExampleStandalo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DetourServer.Tests", "DetourServer.Tests\DetourServer.Tests.csproj", "{B153DA53-5A66-463A-8B66-8DFE0593024A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DetourServerExampleAsp", "DetourServerExampleAsp\DetourServerExampleAsp.csproj", "{1AE33D1C-AA26-496B-99AD-E07FB07B6C68}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DetourServerExampleAsp", "DetourServerExampleAsp\DetourServerExampleAsp.csproj", "{1AE33D1C-AA26-496B-99AD-E07FB07B6C68}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DetourServer.Asp", "DetourServer.Asp\DetourServer.Asp.csproj", "{4CF078FB-4DA8-4E72-A975-C46A35A32ACC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DetourServer.Asp", "DetourServer.Asp\DetourServer.Asp.csproj", "{4CF078FB-4DA8-4E72-A975-C46A35A32ACC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DetourServer.Standalone", "DetourServer.Standalone\DetourServer.Standalone.csproj", "{D37DF759-08D0-4156-9DB1-D3DEF30A18EA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{4CF078FB-4DA8-4E72-A975-C46A35A32ACC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4CF078FB-4DA8-4E72-A975-C46A35A32ACC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4CF078FB-4DA8-4E72-A975-C46A35A32ACC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D37DF759-08D0-4156-9DB1-D3DEF30A18EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D37DF759-08D0-4156-9DB1-D3DEF30A18EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D37DF759-08D0-4156-9DB1-D3DEF30A18EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D37DF759-08D0-4156-9DB1-D3DEF30A18EA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -7,13 +7,14 @@ namespace DetourExamples
 {
     public class DetourExampleConnection : MonoBehaviour
     {
-        private DetourConnection conn;
+        private DetourConnection conn = new DetourConnection();
 
         void Start()
         {
-            var uri = new System.Uri("wss://localhost:27416/");
+            System.UriBuilder blep = new System.UriBuilder("wss", "localhost", 44350, "ws");
+            Debug.Log(blep.Uri.ToString());
             conn.RegisterHandler(1, typeof(TestMessage), OnServerSentTestMessage);
-            conn.Connect(uri);
+            conn.Connect(blep.Uri);
         }
 
         private void OnServerSentTestMessage(DetourMessage msg)

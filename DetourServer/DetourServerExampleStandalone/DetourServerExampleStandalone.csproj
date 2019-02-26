@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DetourServer\DetourServerBase.csproj" />
+    <ProjectReference Include="..\DetourServer.Standalone\DetourServer.Standalone.csproj" />
   </ItemGroup>
 
 </Project>

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Text;
+using UnityEngine;
 
 namespace DetourClient
 {
@@ -68,7 +69,7 @@ namespace DetourClient
             }
             catch (System.Exception ex)
             {
-                ReceivedError.Invoke(ex);
+                Debug.Log(ex);
                 throw;
             }
             finally

@@ -234,15 +234,15 @@ namespace Ninja.WebSockets
         /// </summary>
         private static bool ValidateServerCertificate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
         {
-            if (sslPolicyErrors == SslPolicyErrors.None)
-            {
+            //if (sslPolicyErrors == SslPolicyErrors.None)
+            //{
                 return true;
-            }
+            //}
 
-            Events.Log.SslCertificateError(sslPolicyErrors);
+            //Events.Log.SslCertificateError(sslPolicyErrors);
 
-            // Do not allow this client to communicate with unauthenticated servers.
-            return false;
+            //// Do not allow this client to communicate with unauthenticated servers.
+            //return false;
         }
 
         private static string GetAdditionalHeaders(Dictionary<string, string> additionalHeaders)
