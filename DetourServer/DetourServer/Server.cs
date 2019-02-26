@@ -19,9 +19,15 @@ namespace DetourServer
 
         private static Random Tumbler = new Random();
 
-        public static void UseRoomHandling()
+        public static void StoreClientData(string address, string v, string name)
+        {
+            AllClients[address].StoredData.Add(v, name);
+        }
+
+        public static void UseRoomHandling(RoomDefinition DefaultRoomType)
         {
             RegisterHandler(10, typeof(RoomRequestMessage), RoomRequestReceived);
+            RoomTypes.Add(DefaultRoomType.RoomType, DefaultRoomType);
         }
 
         /// <summary>  
@@ -94,18 +100,23 @@ namespace DetourServer
             Rooms[RoomId].SendToAll(Message);
         }
 
-        public static bool MatchToRoom(string RoomTypeRequested, ClientContainer ClientToMatch)
+        public static void SendToRoomExcept(string RoomId, List<string> AddressesToExclude, DetourMessage Message)
+        {
+            Rooms[RoomId].SendToAllExcept(AddressesToExclude, Message);
+        }
+
+        public static string MatchToRoom(string RoomTypeRequested, ClientContainer ClientToMatch)
         {
             var c = Rooms.Where(x => x.Value.RoomType == RoomTypeRequested).ToList();
             if (c.Count > 0)
             {
                 var p = c[Tumbler.Next(0, c.Count)];
                 p.Value.AddToRoom(ClientToMatch);
-                return true;
+                return p.Key;
             }
             else
             {
-                return false;
+                return null;
             }
         }
 
@@ -113,7 +124,14 @@ namespace DetourServer
         {
             var p = RoomMessage as RoomRequestMessage;
             var cl = AllClients[Address];
-            MatchToRoom(p.RequestedRoomType, cl);
+            if (RoomTypes.ContainsKey(p.RequestedRoomType))
+            {
+                var successfulMatch = MatchToRoom(p.RequestedRoomType, cl);
+                if (successfulMatch!=null)
+                {
+                    RoomTypes[p.RequestedRoomType].OnRoomJoined.Invoke(Address, successfulMatch, RoomMessage);
+                }
+            }
         }
     }
 }
