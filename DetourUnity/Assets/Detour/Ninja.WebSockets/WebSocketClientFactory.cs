@@ -86,22 +86,24 @@ namespace Ninja.WebSockets
             Guid guid = Guid.NewGuid();
             string host = uri.Host;
             int port = uri.Port;
-            var tcpClient = new TcpClient(AddressFamily.InterNetworkV6);
+            var tcpClient = new TcpClient(host, port);
             tcpClient.NoDelay = options.NoDelay;
-            tcpClient.Client.DualMode = true;
+            // removed this because it throws unsupported in Unity.
+            //tcpClient.Client.DualMode = true;
             string uriScheme = uri.Scheme.ToLower();
             bool useSsl = uriScheme == "wss" || uriScheme == "https";
-            IPAddress ipAddress;
-            if (IPAddress.TryParse(host, out ipAddress))
-            {
-                Events.Log.ClientConnectingToIpAddress(guid, ipAddress.ToString(), port);
-                await tcpClient.ConnectAsync(ipAddress, port);
-            }
-            else
-            {
-                Events.Log.ClientConnectingToHost(guid, host, port);
-                await tcpClient.ConnectAsync(host, port);
-            }
+            // removed this because the TcpClient connects when it is constructed.
+            //IPAddress ipAddress;
+            //if (IPAddress.TryParse(host, out ipAddress))
+            //{
+            //    Events.Log.ClientConnectingToIpAddress(guid, ipAddress.ToString(), port);
+            //    await tcpClient.ConnectAsync(ipAddress, port);
+            //}
+            //else
+            //{
+            //    Events.Log.ClientConnectingToHost(guid, host, port);
+            //    await tcpClient.ConnectAsync(host, port);
+            //}
 
             token.ThrowIfCancellationRequested();
             Stream stream = GetStream(guid, tcpClient, useSsl, host);

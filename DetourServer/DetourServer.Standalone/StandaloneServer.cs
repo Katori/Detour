@@ -10,8 +10,14 @@ namespace DetourServer
     {
         private static WebSocketServerFactory _webSocketServerFactory = new WebSocketServerFactory();
 
-        public static async Task StartDetourServer()
+        private static string _GamePath;
+
+        private static int _Port;
+
+        public static async Task StartDetourServer(string GamePath = "/game", int Port = 27416)
         {
+            _GamePath = GamePath;
+            _Port = Port;
             await StartWebServer();
         }
 
@@ -19,12 +25,11 @@ namespace DetourServer
         {
             try
             {
-                int port = 27416;
                 IList<string> supportedSubProtocols = new string[] { "chat" };
-                using (WebServer server = new WebServer(_webSocketServerFactory, supportedSubProtocols))
+                using (WebServer server = new WebServer(_webSocketServerFactory, supportedSubProtocols, _GamePath))
                 {
-                    await server.Listen(port);
-                    Console.WriteLine($"Listening on port {port}");
+                    await server.Listen(_Port);
+                    Console.WriteLine($"Listening on port {_Port}");
                     Console.WriteLine("Press any key to quit");
                     Console.ReadKey();
                 }

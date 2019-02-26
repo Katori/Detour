@@ -45,7 +45,7 @@ namespace DetourClient
             NoDelay = true
         };
 
-        public async void Connect(System.Uri uri)
+        public async Task Connect(System.Uri uri)
         {
             var clientFactory = new WebSocketClientFactory();
 

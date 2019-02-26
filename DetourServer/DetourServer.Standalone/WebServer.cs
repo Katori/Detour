@@ -17,10 +17,13 @@ namespace DetourServer
         private readonly IWebSocketServerFactory _webSocketServerFactory;
         private readonly HashSet<string> _supportedSubProtocols;
 
-        public WebServer(IWebSocketServerFactory webSocketServerFactory, IList<string> supportedSubProtocols = null)
+        private string _GamePath;
+
+        public WebServer(IWebSocketServerFactory webSocketServerFactory, IList<string> supportedSubProtocols = null, string GamePath = "/game")
         {
             _webSocketServerFactory = webSocketServerFactory;
             _supportedSubProtocols = new HashSet<string>(supportedSubProtocols ?? new string[0]);
+            _GamePath = GamePath;
         }
 
         private void ProcessTcpClient(TcpClient tcpClient)
@@ -68,6 +71,9 @@ namespace DetourServer
                 WebSocketHttpContext context = await _webSocketServerFactory.ReadHttpHeaderFromStreamAsync(stream);
                 if (context.IsWebSocketRequest)
                 {
+                if (context.Path == _GamePath)
+                {
+
                     string subProtocol = GetSubProtocol(context.WebSocketRequestedProtocols);
                     var options = new WebSocketServerOptions() { KeepAliveInterval = TimeSpan.FromSeconds(30), SubProtocol = subProtocol };
 
@@ -75,6 +81,12 @@ namespace DetourServer
 
                     var newClient = Server.AddClient(new ClientContainer(System.Guid.NewGuid().ToString(), webSocket));
                     await newClient.ClientProcess();
+                }
+                else
+                {
+                    Console.WriteLine("path not match");
+                }
+                    
                 }
                 else
                 {
@@ -137,6 +149,7 @@ namespace DetourServer
                 while (true)
                 {
                     TcpClient tcpClient = await _listener.AcceptTcpClientAsync();
+                    Console.WriteLine("found client");
                     ProcessTcpClient(tcpClient);
                 }
             }

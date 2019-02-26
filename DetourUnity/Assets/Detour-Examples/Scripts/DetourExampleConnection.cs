@@ -9,12 +9,19 @@ namespace DetourExamples
     {
         private DetourConnection conn = new DetourConnection();
 
-        void Start()
+        async void Start()
         {
-            System.UriBuilder blep = new System.UriBuilder("wss", "localhost", 44350, "ws");
-            Debug.Log(blep.Uri.ToString());
+            System.UriBuilder TestServerUri = new System.UriBuilder("ws", "localhost", 27416, "game");
+            Debug.Log(TestServerUri.Uri.ToString());
             conn.RegisterHandler(1, typeof(TestMessage), OnServerSentTestMessage);
-            conn.Connect(blep.Uri);
+            conn.Connected += Conn_Connected;
+            await conn.Connect(TestServerUri.Uri);
+        }
+
+        private void Conn_Connected()
+        {
+            conn.EnqueuedMessagesToSend.Add(new TestMessage {MessageType = 1, TestString = "TestData" });
+            conn.EnqueuedMessagesToSend.Add(new TestMessage { MessageType = 1, TestString = "TestData" });
         }
 
         private void OnServerSentTestMessage(DetourMessage msg)
