@@ -107,12 +107,12 @@ namespace DetourServer
 
         public static string MatchToRoom(string RoomTypeRequested, ClientContainer ClientToMatch)
         {
-            var c = Rooms.Where(x => x.Value.RoomType == RoomTypeRequested).ToList();
-            if (c.Count > 0)
+            var _AvailableRooms = Rooms.Where(x => x.Value.RoomType == RoomTypeRequested).ToList();
+            if (_AvailableRooms.Count > 0)
             {
-                var p = c[Tumbler.Next(0, c.Count)];
-                p.Value.AddToRoom(ClientToMatch);
-                return p.Key;
+                var _SelectedRoom = _AvailableRooms[Tumbler.Next(0, _AvailableRooms.Count)];
+                _SelectedRoom.Value.AddToRoom(ClientToMatch);
+                return _SelectedRoom.Key;
             }
             else
             {
@@ -122,14 +122,14 @@ namespace DetourServer
 
         public static void RoomRequestReceived(string Address, DetourMessage RoomMessage)
         {
-            var p = RoomMessage as RoomRequestMessage;
-            var cl = AllClients[Address];
-            if (RoomTypes.ContainsKey(p.RequestedRoomType))
+            var _RoomMessageFromClient = RoomMessage as RoomRequestMessage;
+            var _SelectedClient = AllClients[Address];
+            if (RoomTypes.ContainsKey(_RoomMessageFromClient.RequestedRoomType))
             {
-                var successfulMatch = MatchToRoom(p.RequestedRoomType, cl);
+                var successfulMatch = MatchToRoom(_RoomMessageFromClient.RequestedRoomType, _SelectedClient);
                 if (successfulMatch!=null)
                 {
-                    RoomTypes[p.RequestedRoomType].OnRoomJoined.Invoke(Address, successfulMatch, RoomMessage);
+                    RoomTypes[_RoomMessageFromClient.RequestedRoomType].OnRoomJoined.Invoke(Address, successfulMatch, RoomMessage);
                 }
             }
         }

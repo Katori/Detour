@@ -8,6 +8,13 @@
         public string ApplicationVersion;
     }
 
+    [System.Serializable]
+    public class RoomRequestMessage : DetourMessage
+    {
+        public string RequestedRoomId;
+        public string RequestedRoomType;
+    }
+
     public class MessageDefinition
     {
         public MessageEventHandler EventHandler;

@@ -18,13 +18,13 @@ namespace DetourServerExample
         {
             var p = RoomMessage as ClientRequestingRoomJoin;
             Server.StoreClientData(Address, "Name", p.Name);
-            Server.SendToRoomExcept(RoomId, new List<string>(new string[] { Address }), new ClientJoinedRoomMessage() {MessageType = 16, Name = p.Name });
+            Server.SendToRoomExcept(RoomId, new List<string>(new string[] { Address }), new ClientJoinedRoomMessage() {MessageType = (int)MessageTypes.ClientJoinedRoomMessage, Name = p.Name });
             var c = new List<string>();
             foreach (var item in Server.Rooms[RoomId].RoomClients.Values)
             {
                 c.Add(item.StoredData["Name"] as string);
             }
-            Server.SendMessage(Address, new ClientRoomDataCatchUp { Names = c });
+            Server.SendMessage(Address, new ClientRoomDataCatchUp { MessageType = (int)MessageTypes.ClientRoomDataCatchUp, Names = c });
         }
 
         private static void OnClientSentTestMessage(string Address, DetourMessage msg)
