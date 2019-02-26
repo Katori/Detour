@@ -50,7 +50,7 @@ namespace DetourServer.Tests
         public void Server_Clients_AddClient()
         {
             Server.AddClient(TestClientContainer);
-            Assert.That(Server.Clients[TestClientContainer.Id] == TestClientContainer, Is.True);
+            Assert.That(Server.AllClients[TestClientContainer.Id] == TestClientContainer, Is.True);
         }
 
         private void OnClientSentTestMessage(DetourMessage msg)

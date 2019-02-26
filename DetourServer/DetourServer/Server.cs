@@ -7,27 +7,38 @@ namespace DetourServer
 {
     public static class Server
     {
-        public static Dictionary<string, ClientContainer> Clients = new Dictionary<string, ClientContainer>();
+        public static Dictionary<string, ClientContainer> AllClients = new Dictionary<string, ClientContainer>();
 
         public static Dictionary<int, MessageDefinition> MessageTypeToMessageDefinition = new Dictionary<int, MessageDefinition>();
 
         public static event Action<string, DetourMessage> ServerReceivedMessage;
+
+        public static Dictionary<string, RoomDefinition> RoomTypes = new Dictionary<string, RoomDefinition>();
+
+        public static Dictionary<string, Room> Rooms = new Dictionary<string, Room>();
+
+        private static Random Tumbler = new Random();
+
+        public static void UseRoomHandling()
+        {
+            RegisterHandler(10, typeof(RoomRequestMessage), RoomRequestReceived);
+        }
 
         /// <summary>  
         ///  Adds a client to the Dictionary of clients.
         /// </summary> 
         public static ClientContainer AddClient(ClientContainer Client)
         {
-            Clients.Add(Client.Id, Client);
-            return Clients[Client.Id];
+            AllClients.Add(Client.Id, Client);
+            return AllClients[Client.Id];
         }
 
         /// <summary>  
         ///  Enqueues a Message to send to Address as JSON.
         /// </summary> 
-        public static void SendMessage(string Address, dynamic Message)
+        public static void SendMessage(string Address, DetourMessage Message)
         {
-            Clients[Address].EnqueuedMessagesToSend.Add(Message);
+            AllClients[Address].EnqueuedMessagesToSend.Add(Message);
         }
 
         /// <summary>  
@@ -43,7 +54,11 @@ namespace DetourServer
         /// </summary>
         public static void ReceivedMessage(string Address, DetourMessage v)
         {
-            MessageTypeToMessageDefinition[v.MessageType].EventHandler(v);
+            if (MessageTypeToMessageDefinition.ContainsKey(v.MessageType))
+            {
+                MessageTypeToMessageDefinition[v.MessageType].EventHandler(Address, v);
+            }
+
             if (ServerReceivedMessage != null)
             {
                 ServerReceivedMessage.Invoke(Address, v);
@@ -56,6 +71,49 @@ namespace DetourServer
         public static void ClearHandlers()
         {
             MessageTypeToMessageDefinition = new Dictionary<int, MessageDefinition>();
+        }
+
+        public static void RegisterRoomDefinition(string RoomType, int RoomCapacity)
+        {
+            RoomTypes.Add(RoomType, new RoomDefinition {RoomType = RoomType, RoomCapacity = RoomCapacity });
+        }
+
+        public static void CreateRoom(string RoomType, string RoomId = "", bool privateRoom = false)
+        {
+            var c = RoomTypes[RoomType];
+            string _roomId = System.Guid.NewGuid().ToString();
+            if (RoomId != "")
+            {
+                _roomId = RoomId;
+            }
+            Rooms.Add(_roomId, new Room { RoomId = _roomId, RoomType = RoomType, RoomClientCapacity = c.RoomCapacity, PrivateRoom = privateRoom });
+        }
+
+        public static void SendToRoom(string RoomId, DetourMessage Message)
+        {
+            Rooms[RoomId].SendToAll(Message);
+        }
+
+        public static bool MatchToRoom(string RoomTypeRequested, ClientContainer ClientToMatch)
+        {
+            var c = Rooms.Where(x => x.Value.RoomType == RoomTypeRequested).ToList();
+            if (c.Count > 0)
+            {
+                var p = c[Tumbler.Next(0, c.Count)];
+                p.Value.AddToRoom(ClientToMatch);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public static void RoomRequestReceived(string Address, DetourMessage RoomMessage)
+        {
+            var p = RoomMessage as RoomRequestMessage;
+            var cl = AllClients[Address];
+            MatchToRoom(p.RequestedRoomType, cl);
         }
     }
 }

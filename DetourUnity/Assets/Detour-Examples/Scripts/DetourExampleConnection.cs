@@ -20,14 +20,14 @@ namespace DetourExamples
 
         private void Conn_Connected()
         {
-            conn.EnqueuedMessagesToSend.Add(new TestMessage {MessageType = 1, TestString = "TestData" });
-            conn.EnqueuedMessagesToSend.Add(new TestMessage { MessageType = 1, TestString = "TestData" });
+            conn.SendMessage(new DetourMessage());
+            conn.SendMessage(new TestMessage { MessageType = 1, TestString = "TestData" });
         }
 
         private void OnServerSentTestMessage(DetourMessage msg)
         {
             var testMsg = msg as TestMessage;
-            Debug.Log("received some stuff: " + testMsg.TestString);
+            Debug.Log("Received TestString: " + testMsg.TestString);
         }
 
         [System.Serializable]

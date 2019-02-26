@@ -70,12 +70,23 @@ namespace DetourClient
             catch (System.Exception ex)
             {
                 Debug.Log(ex);
+                ReceivedError.Invoke(ex);
                 throw;
             }
             finally
             {
                 Disconnect();
             }
+        }
+
+        public void SendMessage(DetourMessage Message)
+        {
+            EnqueuedMessagesToSend.Add(Message);
+        }
+
+        public void RegisterHandler(int MessageType, Type MessageClass, MessageEventHandler Handler)
+        {
+            MessageTypeToMessageDefinition.Add(MessageType, new MessageDefinition { Type = MessageClass, EventHandler = Handler });
         }
 
         private void Disconnect()
@@ -164,11 +175,6 @@ namespace DetourClient
                 count += result.Count;
             }
             return new ArraySegment<byte>(buffer, 0, count).ToArray();
-        }
-
-        public void RegisterHandler(int MessageType, Type MessageClass, MessageEventHandler Handler)
-        {
-            MessageTypeToMessageDefinition.Add(MessageType, new MessageDefinition { Type = MessageClass, EventHandler = Handler });
         }
     }
 }
