@@ -53,7 +53,7 @@ namespace DetourServer.Tests
             Assert.That(Server.AllClients[TestClientContainer.Id] == TestClientContainer, Is.True);
         }
 
-        private void OnClientSentTestMessage(DetourMessage msg)
+        private void OnClientSentTestMessage(string Address, DetourMessage msg)
         {
             var testMsg = msg as ClientSentTestMessage;
             TestMessageReceived = true;

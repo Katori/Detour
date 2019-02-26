@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using DetourClient;
 
-namespace DetourServerExample
+namespace Detour.Examples.Client
 {
     [System.Serializable]
     public enum MessageTypes

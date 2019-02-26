@@ -52,7 +52,7 @@ namespace DetourServerExampleAsp
             app.UseMvc();
         }
 
-        private static void OnClientSentTestMessage(DetourMessage msg)
+        private static void OnClientSentTestMessage(string Address, DetourMessage msg)
         {
             var testMsg = msg as ClientSentTestMessage;
             System.Console.WriteLine("Received TestString: " + testMsg.TestString);

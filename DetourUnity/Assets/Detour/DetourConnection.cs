@@ -89,7 +89,7 @@ namespace DetourClient
             MessageTypeToMessageDefinition.Add(MessageType, new MessageDefinition { Type = MessageClass, EventHandler = Handler });
         }
 
-        private void Disconnect()
+        public void Disconnect()
         {
             cancellation.Cancel();
             if (WebSocket != null)
@@ -98,7 +98,7 @@ namespace DetourClient
                 WebSocket = null;
                 Connecting = false;
                 ConnectionActive = false;
-                Disconnected.Invoke();
+                Disconnected?.Invoke();
             }
         }
 
@@ -111,6 +111,7 @@ namespace DetourClient
                 if(EnqueuedMessagesToSend.Count > 0)
                 {
                     await SendEnqueuedMessages(EnqueuedMessagesToSend);
+                    EnqueuedMessagesToSend = new List<DetourMessage>();
                 }
 
                 WebSocketReceiveResult result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), token);
@@ -131,6 +132,18 @@ namespace DetourClient
                 }
 
                 var msg = ProcessJsonToDetourMessage(data, data.Length);
+                if (msg != null)
+                {
+                    ReceivedMessage(msg);
+                }
+            }
+        }
+
+        private void ReceivedMessage(DetourMessage msg)
+        {
+            if (MessageTypeToMessageDefinition.ContainsKey(msg.MessageType))
+            {
+                MessageTypeToMessageDefinition[msg.MessageType].EventHandler(msg);
             }
         }
 
@@ -141,6 +154,7 @@ namespace DetourClient
                 JSONBuffer = JsonConvert.SerializeObject(item, JSONSettings);
                 MessageBuffer = Encoding.UTF8.GetBytes(JSONBuffer);
                 await WebSocket.SendAsync(new ArraySegment<byte>(MessageBuffer, 0, MessageBuffer.Length), WebSocketMessageType.Text, true, CancellationToken.None);
+                
             }
         }
 

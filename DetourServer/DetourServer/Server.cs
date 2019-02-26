@@ -21,12 +21,19 @@ namespace DetourServer
 
         public static void StoreClientData(string address, string v, string name)
         {
-            AllClients[address].StoredData.Add(v, name);
+            if (AllClients[address].StoredData.ContainsKey(v))
+            {
+                AllClients[address].StoredData[v] = name;
+            }
+            else
+            {
+                AllClients[address].StoredData.Add(v, name);
+            }
         }
 
-        public static void UseRoomHandling(RoomDefinition DefaultRoomType)
+        public static void UseRoomHandling(System.Type RoomMessageType, RoomDefinition DefaultRoomType)
         {
-            RegisterHandler(10, typeof(RoomRequestMessage), RoomRequestReceived);
+            RegisterHandler(10, RoomMessageType, RoomRequestReceived);
             RoomTypes.Add(DefaultRoomType.RoomType, DefaultRoomType);
         }
 
@@ -112,16 +119,23 @@ namespace DetourServer
             {
                 var _SelectedRoom = _AvailableRooms[Tumbler.Next(0, _AvailableRooms.Count)];
                 _SelectedRoom.Value.AddToRoom(ClientToMatch);
+                Console.WriteLine("client added to existing room");
                 return _SelectedRoom.Key;
             }
             else
             {
-                return null;
+                var _newRoomId = System.Guid.NewGuid().ToString();
+                var RequestedRoomType = RoomTypes[RoomTypeRequested];
+                Rooms.Add(_newRoomId, new Room {RoomId = _newRoomId, RoomClientCapacity = RequestedRoomType.RoomCapacity, RoomType = RequestedRoomType.RoomType });
+                Rooms[_newRoomId].AddToRoom(ClientToMatch);
+                Console.WriteLine("client added to new room");
+                return _newRoomId;
             }
         }
 
         public static void RoomRequestReceived(string Address, DetourMessage RoomMessage)
         {
+            Console.WriteLine("room request received");
             var _RoomMessageFromClient = RoomMessage as RoomRequestMessage;
             var _SelectedClient = AllClients[Address];
             if (RoomTypes.ContainsKey(_RoomMessageFromClient.RequestedRoomType))

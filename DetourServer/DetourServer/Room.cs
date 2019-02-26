@@ -26,8 +26,16 @@ namespace DetourServer
         {
             if(RoomClientCount < RoomClientCapacity)
             {
-                RoomClients.Add(Client.Id, Client);
-                return true;
+                if (RoomClients.ContainsKey(Client.Id))
+                {
+                    RoomClients[Client.Id] = Client;
+                    return true;
+                }
+                else
+                {
+                    RoomClients.Add(Client.Id, Client);
+                    return true;
+                }
             }
             else
             {
