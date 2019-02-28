@@ -91,7 +91,7 @@ namespace DetourClient
 
         public void Disconnect()
         {
-            cancellation.Cancel();
+            cancellation?.Cancel();
             if (WebSocket != null)
             {
                 WebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "", CancellationToken.None);

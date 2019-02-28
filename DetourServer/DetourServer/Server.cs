@@ -19,15 +19,15 @@ namespace DetourServer
 
         private static Random Tumbler = new Random();
 
-        public static void StoreClientData(string address, string v, string name)
+        public static void StoreClientData(string address, string v, dynamic Data)
         {
             if (AllClients[address].StoredData.ContainsKey(v))
             {
-                AllClients[address].StoredData[v] = name;
+                AllClients[address].StoredData[v] = Data;
             }
             else
             {
-                AllClients[address].StoredData.Add(v, name);
+                AllClients[address].StoredData.Add(v, Data);
             }
         }
 

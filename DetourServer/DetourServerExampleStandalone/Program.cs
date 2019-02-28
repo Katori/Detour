@@ -19,16 +19,19 @@ namespace DetourServerExample
             System.Console.WriteLine("made it to roomjoined ");
             var p = RoomMessage as ClientRequestingRoomJoin;
             Server.StoreClientData(Address, "Name", p.Name);
+            Server.StoreClientData(Address, "Position", new Vector2(1, 1));
             Server.SendToRoomExcept(RoomId, new List<string>(new string[] { Address }), new ClientJoinedRoomMessage() {MessageType = (int)MessageTypes.ClientJoinedRoomMessage, Name = p.Name });
             var c = new List<string>();
+            var lV = new List<Vector2>();
             foreach (var item in Server.Rooms[RoomId].RoomClients.Values)
             {
                 if (item.Id != Address)
                 {
                     c.Add(item.StoredData["Name"] as string);
+                    lV.Add(item.StoredData["Position"] as Vector2);
                 }
             }
-            Server.SendMessage(Address, new ClientRoomDataCatchUp { MessageType = (int)MessageTypes.ClientRoomDataCatchUp, Names = c });
+            Server.SendMessage(Address, new ClientRoomDataCatchUp { MessageType = (int)MessageTypes.ClientRoomDataCatchUp, Names = c, Positions = lV });
             System.Console.WriteLine("sent roomdatacatchup message");
         }
 

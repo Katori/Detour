@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using DetourClient;
+using UnityEngine;
 
 namespace Detour.Examples.Client
 {
@@ -22,6 +23,7 @@ namespace Detour.Examples.Client
     public class ClientRoomDataCatchUp : DetourMessage
     {
         public List<string> Names;
+        public List<Vector2> Positions;
     }
 
     [System.Serializable]

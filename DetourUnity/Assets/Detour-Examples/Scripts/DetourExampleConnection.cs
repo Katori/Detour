@@ -11,7 +11,7 @@ namespace Detour.Examples.Client
         private DetourConnection conn = new DetourConnection();
 
         public List<string> RoomClientNames;
-
+        public List<Vector2> RoomClientPositions;
         private string _Name;
 
         void Start()
@@ -43,6 +43,7 @@ namespace Detour.Examples.Client
             var c = netMsg as ClientRoomDataCatchUp;
             Debug.Log("received room catchup data");
             RoomClientNames = c.Names;
+            RoomClientPositions = c.Positions;
         }
 
         private void OnClientJoinedRoom(DetourMessage netMsg)
