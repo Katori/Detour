@@ -45,11 +45,17 @@ namespace DetourServerExampleAsp
             app.UseWebSockets();
 
             Server.RegisterHandler(1, typeof(ClientSentTestMessage), OnClientSentTestMessage);
+            Server.UseRoomHandling(typeof(ClientRequestingRoomJoin), new RoomDefinition{RoomType = "Default", RoomCapacity = 2, OnRoomJoined = ClientJoinedRoom });
 
             app.UseDetourServer();
 
             app.UseHttpsRedirection();
             app.UseMvc();
+        }
+
+        private void ClientJoinedRoom(string Address, string RoomId, DetourMessage ExtraJoinData)
+        {
+            throw new NotImplementedException();
         }
 
         private static void OnClientSentTestMessage(string Address, DetourMessage msg)
