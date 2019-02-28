@@ -33,15 +33,21 @@ namespace DetourServer
 
         public async Task ClientProcess()
         {
-            var buffer = new byte[1024 * 4];
-            WebSocketReceiveResult result = await Socket.ReceiveAsync(new System.ArraySegment<byte>(buffer), CancellationToken.None);
-
-            while (!result.CloseStatus.HasValue)
+            try
             {
-                if (EnqueuedMessagesToSend.Count > 0)
+                var buffer = new byte[1024 * 4];
+                WebSocketReceiveResult result = await Socket.ReceiveAsync(new System.ArraySegment<byte>(buffer), CancellationToken.None);
+
+                while (!result.CloseStatus.HasValue)
                 {
-                    dynamic[] c = new dynamic[EnqueuedMessagesToSend.Count];
-                    EnqueuedMessagesToSend.CopyTo(c);
+                    if (result.MessageType == WebSocketMessageType.Close)
+                    {
+                        break;
+                    }
+                    if (EnqueuedMessagesToSend.Count > 0)
+                    {
+                        dynamic[] c = new dynamic[EnqueuedMessagesToSend.Count];
+                        EnqueuedMessagesToSend.CopyTo(c);
                         foreach (var item in c)
                         {
                             JSONBuffer = JsonConvert.SerializeObject(item, jsonSettings);
@@ -49,22 +55,31 @@ namespace DetourServer
                             await Socket.SendAsync(new System.ArraySegment<byte>(MessageBuffer, 0, MessageBuffer.Length), WebSocketMessageType.Text, true, CancellationToken.None);
                             EnqueuedMessagesToSend.Remove(item);
                         }
-                }
+                    }
 
-                result = await Socket.ReceiveAsync(new System.ArraySegment<byte>(buffer), CancellationToken.None);
+                    result = await Socket.ReceiveAsync(new System.ArraySegment<byte>(buffer), CancellationToken.None);
 
-                if (result.Count > 0)
-                {
-                    var msg = ProcessJsonIntoDetourMessage(buffer, result.Count);
-                    if (msg != null)
+                    if (result.Count > 0)
                     {
-                        Server.ReceivedMessage(Id, msg);
+                        var msg = ProcessJsonIntoDetourMessage(buffer, result.Count);
+                        if (msg != null)
+                        {
+                            Server.ReceivedMessage(Id, msg);
+                        }
                     }
                 }
+                System.Console.WriteLine("rem cli");
+                await Socket.CloseAsync(result.CloseStatus.Value, result.CloseStatusDescription, CancellationToken.None);
+                Server.RemoveClient(this);
             }
-            System.Console.WriteLine("rem cli");
-            await Socket.CloseAsync(result.CloseStatus.Value, result.CloseStatusDescription, CancellationToken.None);
-            Server.RemoveClient(this);
+            catch (Newtonsoft.Json.JsonReaderException)
+            {
+                System.Console.WriteLine("found exception, remove client: " + Id);
+            }
+            finally
+            {
+                Server.RemoveClient(this);
+            }
         }
 
         public DetourMessage ProcessJsonIntoDetourMessage(byte[] JsonBuffer, int ByteLength)

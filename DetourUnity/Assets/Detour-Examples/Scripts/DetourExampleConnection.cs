@@ -28,6 +28,12 @@ namespace Detour.Examples.Client
             conn.RegisterHandler((int)MessageTypes.ClientJoinedRoomMessage, typeof(ClientJoinedRoomMessage), OnClientJoinedRoom);
             conn.RegisterHandler((int)MessageTypes.ClientRoomDataCatchUp, typeof(ClientRoomDataCatchUp), RoomDataCatchUpReceived);
             conn.Connected += Conn_Connected;
+            conn.Disconnected += Conn_Disconnected;
+        }
+
+        private void Conn_Disconnected()
+        {
+            Debug.Log("disconn");
         }
 
         internal async void Connect(string Name)
