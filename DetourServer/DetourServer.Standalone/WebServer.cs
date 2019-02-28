@@ -80,7 +80,20 @@ namespace DetourServer
                     WebSocket webSocket = await _webSocketServerFactory.AcceptWebSocketAsync(context, options);
 
                     var newClient = Server.AddClient(new ClientContainer(System.Guid.NewGuid().ToString(), webSocket));
-                    await newClient.ClientProcess();
+                    try
+                    {
+                        await newClient.ClientProcess();
+                    }
+                    catch(Newtonsoft.Json.JsonReaderException jsonExcep)
+                    {
+                        Server.RemoveClient(newClient);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("found excp: " + ex);
+                        throw;
+                    }
+                    
                 }
                 else
                 {

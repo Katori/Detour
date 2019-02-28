@@ -40,13 +40,15 @@ namespace DetourServer
             {
                 if (EnqueuedMessagesToSend.Count > 0)
                 {
-                    foreach (var item in EnqueuedMessagesToSend)
-                    {
-                        JSONBuffer = JsonConvert.SerializeObject(item, jsonSettings);
-                        MessageBuffer = Encoding.UTF8.GetBytes(JSONBuffer);
-                        await Socket.SendAsync(new System.ArraySegment<byte>(MessageBuffer, 0, MessageBuffer.Length), WebSocketMessageType.Text, true, CancellationToken.None);
-                        EnqueuedMessagesToSend.Remove(item);
-                    }
+                    dynamic[] c = new dynamic[EnqueuedMessagesToSend.Count];
+                    EnqueuedMessagesToSend.CopyTo(c);
+                        foreach (var item in c)
+                        {
+                            JSONBuffer = JsonConvert.SerializeObject(item, jsonSettings);
+                            MessageBuffer = Encoding.UTF8.GetBytes(JSONBuffer);
+                            await Socket.SendAsync(new System.ArraySegment<byte>(MessageBuffer, 0, MessageBuffer.Length), WebSocketMessageType.Text, true, CancellationToken.None);
+                            EnqueuedMessagesToSend.Remove(item);
+                        }
                 }
 
                 result = await Socket.ReceiveAsync(new System.ArraySegment<byte>(buffer), CancellationToken.None);
@@ -60,7 +62,9 @@ namespace DetourServer
                     }
                 }
             }
+            System.Console.WriteLine("rem cli");
             await Socket.CloseAsync(result.CloseStatus.Value, result.CloseStatusDescription, CancellationToken.None);
+            Server.RemoveClient(this);
         }
 
         public DetourMessage ProcessJsonIntoDetourMessage(byte[] JsonBuffer, int ByteLength)

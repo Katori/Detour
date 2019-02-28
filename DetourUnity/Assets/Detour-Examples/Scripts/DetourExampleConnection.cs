@@ -6,18 +6,35 @@ namespace Detour.Examples.Client
 {
     public class DetourExampleConnection : MonoBehaviour
     {
+        internal static DetourExampleConnection Instance { get; private set; }
+
         private DetourConnection conn = new DetourConnection();
 
         public List<string> RoomClientNames;
 
-        async void Start()
+        private string _Name;
+
+        void Start()
         {
-            System.UriBuilder TestServerUri = new System.UriBuilder("ws", "localhost", 27416, "game");
-            Debug.Log(TestServerUri.Uri.ToString());
+            if (Instance == null)
+            {
+                Instance = this;
+            }
+            else
+            {
+                Destroy(gameObject);
+            }
             conn.RegisterHandler(1, typeof(TestMessage), OnServerSentTestMessage);
             conn.RegisterHandler((int)MessageTypes.ClientJoinedRoomMessage, typeof(ClientJoinedRoomMessage), OnClientJoinedRoom);
             conn.RegisterHandler((int)MessageTypes.ClientRoomDataCatchUp, typeof(ClientRoomDataCatchUp), RoomDataCatchUpReceived);
             conn.Connected += Conn_Connected;
+        }
+
+        internal async void Connect(string Name)
+        {
+            _Name = Name;
+            System.UriBuilder TestServerUri = new System.UriBuilder("ws", "localhost", 27416, "game");
+            Debug.Log(TestServerUri.Uri.ToString());
             await conn.Connect(TestServerUri.Uri);
         }
 
@@ -38,8 +55,9 @@ namespace Detour.Examples.Client
         {
             conn.SendMessage(new DetourMessage());
             conn.SendMessage(new TestMessage { MessageType = 1, TestString = "TestData" });
-            conn.SendMessage(new ClientRequestingRoomJoin {MessageType = (int)MessageTypes.RoomRequestMessage, RequestedRoomType = "Default", Name = "blep" });
+            conn.SendMessage(new ClientRequestingRoomJoin {MessageType = (int)MessageTypes.RoomRequestMessage, RequestedRoomType = "Default", Name = _Name });
             Debug.Log("connected");
+            UIController.Instance.HideConnectionUI();
         }
 
         private void OnServerSentTestMessage(DetourMessage msg)

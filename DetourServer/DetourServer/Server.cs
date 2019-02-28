@@ -62,6 +62,23 @@ namespace DetourServer
             MessageTypeToMessageDefinition.Add(HandlerId, new MessageDefinition { EventHandler = Handler, Type = MessageType });
         }
 
+        public static void RemoveClient(ClientContainer clientContainer)
+        {
+            System.Console.WriteLine("removing client");
+            AllClients.Remove(clientContainer.Id);
+            var c = Rooms.Values;
+            foreach (var item in c)
+            {
+                // for each room
+                var p = item.RoomClients.Values.Where(x => x.Id == clientContainer.Id).ToList();
+                if (p.Count > 0)
+                {
+                    // if player in room
+                    item.RoomClients.Remove(clientContainer.Id);
+                }
+            }
+        }
+
         /// <summary>  
         ///  Called by the ClientContainer when message is received, runs it through the appropriate handler.
         /// </summary>

@@ -23,7 +23,10 @@ namespace DetourServerExample
             var c = new List<string>();
             foreach (var item in Server.Rooms[RoomId].RoomClients.Values)
             {
-                c.Add(item.StoredData["Name"] as string);
+                if (item.Id != Address)
+                {
+                    c.Add(item.StoredData["Name"] as string);
+                }
             }
             Server.SendMessage(Address, new ClientRoomDataCatchUp { MessageType = (int)MessageTypes.ClientRoomDataCatchUp, Names = c });
             System.Console.WriteLine("sent roomdatacatchup message");
