@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 namespace Detour.Examples.Client
@@ -35,6 +33,11 @@ namespace Detour.Examples.Client
         internal void HideConnectionUI()
         {
             ConnectionPanel.SetActive(false);
+        }
+
+        internal void ShowConnectionUI()
+        {
+            ConnectionPanel.SetActive(true);
         }
     }
 }

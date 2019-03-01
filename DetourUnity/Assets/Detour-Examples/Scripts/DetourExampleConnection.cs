@@ -34,6 +34,7 @@ namespace Detour.Examples.Client
         private void Conn_Disconnected()
         {
             Debug.Log("disconn");
+            UIController.Instance.ShowConnectionUI();
         }
 
         internal async void Connect(string Name)
@@ -60,7 +61,7 @@ namespace Detour.Examples.Client
 
         private void Conn_Connected()
         {
-            conn.SendMessage(new DetourMessage());
+            conn.SendMessage(new DetourMessage {MessageType = 0 });
             conn.SendMessage(new TestMessage { MessageType = 1, TestString = "TestData" });
             conn.SendMessage(new ClientRequestingRoomJoin {MessageType = (int)MessageTypes.RoomRequestMessage, RequestedRoomType = "Default", Name = _Name });
             Debug.Log("connected");
