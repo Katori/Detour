@@ -11,6 +11,7 @@ namespace DetourServer
         public int RoomClientCapacity;
         public bool PrivateRoom = false;
         public int RoomClientCount { get { return RoomClients.Count; } }
+        public int RoomStartPoints;
 
         public Dictionary<string, ClientContainer> RoomClients = new Dictionary<string, ClientContainer>();
 

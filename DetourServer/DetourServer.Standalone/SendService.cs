@@ -23,7 +23,10 @@ namespace DetourServer.Standalone
                     {
                         var JSONBufffer = JsonConvert.SerializeObject(sendMsg.Message);
                         var MessageBuffer = Encoding.UTF8.GetBytes(JSONBufffer);
-                        await Server.AllClients[sendMsg.Address].Socket.SendAsync(new System.ArraySegment<byte>(MessageBuffer, 0, MessageBuffer.Length), WebSocketMessageType.Text, true, stoppingToken);
+                        if (Server.AllClients.ContainsKey(sendMsg.Address))
+                        {
+                            await Server.AllClients[sendMsg.Address].Socket.SendAsync(new System.ArraySegment<byte>(MessageBuffer, 0, MessageBuffer.Length), WebSocketMessageType.Text, true, stoppingToken);
+                        }
                     }
                 }
             }

@@ -9,10 +9,12 @@ namespace DetourServerExample
 {
     class Program
     {
+        static System.Random RanGen = new System.Random();
+
         public static async Task Main(string[] args)
         {
             Server.RegisterHandler((int)MessageTypes.ClientSentTestMessage, typeof(ClientSentTestMessage), OnClientSentTestMessage);
-            Server.UseRoomHandling(typeof(ClientRequestingRoomJoin), new RoomDefinition {RoomType = "Default", RoomCapacity = 100, OnRoomJoined = OnClientJoinedRoom });
+            Server.UseRoomHandling(typeof(ClientRequestingRoomJoin), new RoomDefinition {RoomType = "Default", RoomCapacity = 100, StartPoints = 4, OnRoomJoined = OnClientJoinedRoom });
             Server.ClientRemoved += Server_ClientRemoved;
             Server.ApplicationVersion = 0.1f;
             Server.DetourVersion = 0.2f;
@@ -50,7 +52,7 @@ namespace DetourServerExample
                     PlayerList.Add(item.StoredData["Player"] as PlayerDefinition);
                 }
             }
-            Server.SendMessage(Address, new ClientRoomDataCatchUp { DetourVersion = Server.DetourVersion, ApplicationVersion = Server.ApplicationVersion, RoomId = RoomId, MessageType = (int)MessageTypes.ClientRoomDataCatchUp, Players = PlayerList });
+            Server.SendMessage(Address, new ClientRoomDataCatchUp { DetourVersion = Server.DetourVersion, ApplicationVersion = Server.ApplicationVersion, RoomId = RoomId, MessageType = (int)MessageTypes.ClientRoomDataCatchUp, Players = PlayerList, ClientStartPosition = RanGen.Next(0, Server.Rooms[RoomId].RoomStartPoints)});
             System.Console.WriteLine("sent roomdatacatchup message");
         }
 

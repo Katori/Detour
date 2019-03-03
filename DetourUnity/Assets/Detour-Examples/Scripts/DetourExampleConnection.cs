@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using DetourClient;
-using System;
 using System.Linq;
 
 namespace Detour.Examples.Client
@@ -15,6 +14,12 @@ namespace Detour.Examples.Client
         public List<PlayerDefinition> PlayersList;
 
         internal Dictionary<string, PlayerDefinition> Players = new Dictionary<string, PlayerDefinition>();
+
+        internal Dictionary<string, GameObject> PlayerObjects = new Dictionary<string, GameObject>();
+
+        public GameObject PlayerPrefab;
+
+        public List<Transform> StartPoints;
 
         private string _Name;
 
@@ -51,6 +56,12 @@ namespace Detour.Examples.Client
             {
                 PlayersList.Remove(p[0]);
             }
+            if (PlayerObjects.ContainsKey(id))
+            {
+                var c = PlayerObjects[id];
+                PlayerObjects.Remove(id);
+                Destroy(c);
+            }
         }
 
         private void Update()
@@ -83,6 +94,18 @@ namespace Detour.Examples.Client
             {
                 AddPlayer(item);
             }
+            AddPlayer(new PlayerDefinition
+            {
+                Id = "0",
+                Name = _Name
+            }, c.ClientStartPosition);
+        }
+
+        private void AddPlayer(PlayerDefinition playerDefinition, int clientStartPosition)
+        {
+            var c = StartPoints[clientStartPosition];
+            playerDefinition.Position = new Vector2(c.position.x, c.position.z);
+            AddPlayer(playerDefinition);
         }
 
         private void OnClientJoinedRoom(DetourMessage netMsg)
@@ -122,6 +145,9 @@ namespace Detour.Examples.Client
         {
             PlayersList.Add(PlayerToAdd);
             Players.Add(PlayerToAdd.Id, PlayerToAdd);
+            var c = Instantiate(PlayerPrefab);
+            PlayerObjects.Add(PlayerToAdd.Id, c);
+            PlayerObjects[PlayerToAdd.Id].transform.position = new Vector3(PlayerToAdd.Position.x, 0, PlayerToAdd.Position.y);
         }
     }
 }

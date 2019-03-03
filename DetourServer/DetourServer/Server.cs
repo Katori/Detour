@@ -170,7 +170,7 @@ namespace DetourServer
             {
                 var _newRoomId = System.Guid.NewGuid().ToString();
                 var RequestedRoomType = RoomTypes[RoomTypeRequested];
-                Rooms.Add(_newRoomId, new Room {RoomId = _newRoomId, RoomClientCapacity = RequestedRoomType.RoomCapacity, RoomType = RequestedRoomType.RoomType });
+                Rooms.Add(_newRoomId, new Room {RoomId = _newRoomId, RoomClientCapacity = RequestedRoomType.RoomCapacity, RoomType = RequestedRoomType.RoomType, RoomStartPoints = RequestedRoomType.StartPoints });
                 Rooms[_newRoomId].AddToRoom(ClientToMatch);
                 Console.WriteLine("client added to new room");
                 return _newRoomId;

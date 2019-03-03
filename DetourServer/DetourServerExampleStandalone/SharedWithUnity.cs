@@ -22,6 +22,7 @@ namespace DetourServerExample
     public class ClientRoomDataCatchUp : DetourMessage
     {
         public List<PlayerDefinition> Players;
+        public int ClientStartPosition;
     }
 
     [System.Serializable]
