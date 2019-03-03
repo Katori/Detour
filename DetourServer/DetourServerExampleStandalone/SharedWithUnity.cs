@@ -28,13 +28,13 @@ namespace DetourServerExample
     [System.Serializable]
     public class Vector2
     {
-        public float X;
-        public float Y;
+        public float x;
+        public float y;
 
         public Vector2(float x, float y)
         {
-            this.X = x;
-            this.Y = y;
+            this.x = x;
+            this.y = y;
         }
     }
 

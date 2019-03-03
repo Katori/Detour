@@ -38,7 +38,7 @@ namespace DetourClient
         
         private JsonSerializerSettings JSONSettings = new JsonSerializerSettings
         {
-            TypeNameHandling = TypeNameHandling.Objects
+            TypeNameHandling = TypeNameHandling.Auto
         };
 
         private WebSocketClientOptions ClientOptions = new WebSocketClientOptions
