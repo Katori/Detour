@@ -16,6 +16,12 @@
         public string RequestedRoomType;
     }
 
+    [System.Serializable]
+    public class PlayerRemovedMessage : DetourMessage
+    {
+        public string Id;
+    }
+
     public class MessageDefinition
     {
         public MessageEventHandler EventHandler;

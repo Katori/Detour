@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using DetourClient;
+using System;
+using System.Linq;
 
 namespace Detour.Examples.Client
 {
@@ -29,8 +31,26 @@ namespace Detour.Examples.Client
             conn.RegisterHandler(1, typeof(TestMessage), OnServerSentTestMessage);
             conn.RegisterHandler((int)MessageTypes.ClientJoinedRoomMessage, typeof(ClientJoinedRoomMessage), OnClientJoinedRoom);
             conn.RegisterHandler((int)MessageTypes.ClientRoomDataCatchUp, typeof(ClientRoomDataCatchUp), RoomDataCatchUpReceived);
+            conn.RegisterHandler(5, typeof(PlayerRemovedMessage), PlayerRemoved);
             conn.Connected += Conn_Connected;
             conn.Disconnected += Conn_Disconnected;
+        }
+
+        private void PlayerRemoved(DetourMessage netMsg)
+        {
+            var c = netMsg as PlayerRemovedMessage;
+            Debug.Log("removing player: " + c.Id);
+            RemovePlayer(c.Id);
+        }
+
+        private void RemovePlayer(string id)
+        {
+            Players.Remove(id);
+            var p = PlayersList.Where(x => x.Id == id).ToList();
+            if (p.Count > 0)
+            {
+                PlayersList.Remove(p[0]);
+            }
         }
 
         private void Update()

@@ -10,10 +10,16 @@ namespace DetourServerExample
         {
             Server.RegisterHandler((int)MessageTypes.ClientSentTestMessage, typeof(ClientSentTestMessage), OnClientSentTestMessage);
             Server.UseRoomHandling(typeof(ClientRequestingRoomJoin), new RoomDefinition {RoomType = "Default", RoomCapacity = 100, OnRoomJoined = OnClientJoinedRoom });
+            Server.ClientRemoved += Server_ClientRemoved;
             Server.ApplicationVersion = 0.1f;
             Server.DetourVersion = 0.2f;
             Task task = StandaloneServer.StartDetourServer();
             task.Wait();
+        }
+
+        private static void Server_ClientRemoved(string obj)
+        {
+            
         }
 
         private static void OnClientJoinedRoom(string Address, string RoomId, DetourMessage RoomMessage)

@@ -12,6 +12,7 @@ namespace DetourServer
         public static Dictionary<int, MessageDefinition> MessageTypeToMessageDefinition = new Dictionary<int, MessageDefinition>();
 
         public static event Action<string, DetourMessage> ServerReceivedMessage;
+        public static event Action<string> ClientRemoved;
 
         public static Dictionary<string, RoomDefinition> RoomTypes = new Dictionary<string, RoomDefinition>();
 
@@ -77,8 +78,19 @@ namespace DetourServer
                 {
                     // if player in room
                     item.RoomClients.Remove(clientContainer.Id);
+                    foreach (var item2 in item.RoomClients.Values)
+                    {
+                        item2.EnqueuedMessagesToSend.Add(new PlayerRemovedMessage {
+                            ApplicationVersion = Server.ApplicationVersion,
+                            DetourVersion = DetourVersion,
+                            MessageType = 5,
+                            Id = clientContainer.Id,
+                            RoomId = item.RoomId
+                        });
+                    }
                 }
             }
+            ClientRemoved?.Invoke(clientContainer.Id);
         }
 
         /// <summary>  
