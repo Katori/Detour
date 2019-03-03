@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Text;
 using UnityEngine;
+using System.Net.Sockets;
 
 namespace DetourClient
 {
@@ -45,11 +46,13 @@ namespace DetourClient
             NoDelay = true
         };
 
-        public async Task Connect(System.Uri uri)
+        public async void Connect(System.Uri uri)
         {
             var clientFactory = new WebSocketClientFactory();
 
             cancellation = new CancellationTokenSource();
+
+            Connecting = true;
 
             Uri = uri;
             try
@@ -58,7 +61,7 @@ namespace DetourClient
                 {
                     Connecting = false;
                     ConnectionActive = true;
-                    Connected.Invoke();
+                    Connected?.Invoke();
 
                     await Receive(WebSocket, cancellation.Token);
                 }
@@ -66,12 +69,12 @@ namespace DetourClient
             catch (ObjectDisposedException)
             {
                 // client closed
+                Debug.Log("closed connection");
             }
             catch (System.Exception ex)
             {
-                Debug.Log(ex);
-                ReceivedError.Invoke(ex);
-                throw;
+                Debug.LogError(ex);
+                ReceivedError?.Invoke(ex);
             }
             finally
             {
@@ -87,6 +90,21 @@ namespace DetourClient
         public void RegisterHandler(int MessageType, Type MessageClass, MessageEventHandler Handler)
         {
             MessageTypeToMessageDefinition.Add(MessageType, new MessageDefinition { Type = MessageClass, EventHandler = Handler });
+        }
+
+        public async void Send()
+        {
+            if (WebSocket == null)
+            {
+                ReceivedError?.Invoke(new SocketException((int)SocketError.NotConnected));
+                return;
+            }
+
+            if (EnqueuedMessagesToSend.Count > 0)
+            {
+                await SendEnqueuedMessages(EnqueuedMessagesToSend);
+                EnqueuedMessagesToSend = new List<DetourMessage>();
+            }
         }
 
         public void Disconnect()
@@ -108,11 +126,6 @@ namespace DetourClient
 
             while (true)
             {
-                if(EnqueuedMessagesToSend.Count > 0)
-                {
-                    await SendEnqueuedMessages(EnqueuedMessagesToSend);
-                    EnqueuedMessagesToSend = new List<DetourMessage>();
-                }
 
                 WebSocketReceiveResult result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), token);
 
@@ -131,10 +144,21 @@ namespace DetourClient
                     break;
                 }
 
-                var msg = ProcessJsonToDetourMessage(data, data.Length);
-                if (msg != null)
+                try
                 {
-                    ReceivedMessage(msg);
+                    var msg = ProcessJsonToDetourMessage(data, data.Length);
+                    if (msg != null)
+                    {
+                        ReceivedMessage(msg);
+                    }
+                }
+                catch(Newtonsoft.Json.JsonReaderException ex)
+                {
+                    Debug.LogError(ex);
+                }
+                catch(System.Exception ex)
+                {
+                    Debug.LogError(ex);
                 }
             }
         }
@@ -151,10 +175,18 @@ namespace DetourClient
         {
             foreach (var item in enqueuedMessagesToSend)
             {
-                JSONBuffer = JsonConvert.SerializeObject(item, JSONSettings);
-                MessageBuffer = Encoding.UTF8.GetBytes(JSONBuffer);
-                await WebSocket.SendAsync(new ArraySegment<byte>(MessageBuffer, 0, MessageBuffer.Length), WebSocketMessageType.Text, true, CancellationToken.None);
-                
+                try
+                {
+                    JSONBuffer = JsonConvert.SerializeObject(item, JSONSettings);
+                    MessageBuffer = Encoding.UTF8.GetBytes(JSONBuffer);
+                    await WebSocket.SendAsync(new ArraySegment<byte>(MessageBuffer, 0, MessageBuffer.Length), WebSocketMessageType.Text, true, CancellationToken.None);
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError(ex);
+                    Disconnect();
+                    ReceivedError?.Invoke(ex);
+                }
             }
         }
 

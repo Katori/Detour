@@ -31,18 +31,26 @@ namespace Detour.Examples.Client
             conn.Disconnected += Conn_Disconnected;
         }
 
+        private void Update()
+        {
+            if (conn.ConnectionActive)
+            {
+                conn.Send();
+            }
+        }
+
         private void Conn_Disconnected()
         {
             Debug.Log("disconn");
             UIController.Instance.ShowConnectionUI();
         }
 
-        internal async void Connect(string Name)
+        internal void Connect(string Name)
         {
             _Name = Name;
             System.UriBuilder TestServerUri = new System.UriBuilder("ws", "localhost", 27416, "game");
             Debug.Log(TestServerUri.Uri.ToString());
-            await conn.Connect(TestServerUri.Uri);
+            conn.Connect(TestServerUri.Uri);
         }
 
         private void RoomDataCatchUpReceived(DetourMessage netMsg)
