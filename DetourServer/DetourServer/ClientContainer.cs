@@ -44,18 +44,15 @@ namespace DetourServer
                     {
                         break;
                     }
-                    if (EnqueuedMessagesToSend.Count > 0)
-                    {
-                        dynamic[] c = new dynamic[EnqueuedMessagesToSend.Count];
-                        EnqueuedMessagesToSend.CopyTo(c);
-                        foreach (var item in c)
-                        {
-                            JSONBuffer = JsonConvert.SerializeObject(item, jsonSettings);
-                            MessageBuffer = Encoding.UTF8.GetBytes(JSONBuffer);
-                            await Socket.SendAsync(new System.ArraySegment<byte>(MessageBuffer, 0, MessageBuffer.Length), WebSocketMessageType.Text, true, CancellationToken.None);
-                            EnqueuedMessagesToSend.Remove(item);
-                        }
-                    }
+                    //if (EnqueuedMessagesToSend.Count > 0)
+                    //{
+                    //    dynamic[] c = new dynamic[EnqueuedMessagesToSend.Count];
+                    //    EnqueuedMessagesToSend.CopyTo(c);
+                    //    foreach (var item in c)
+                    //    {
+                            
+                    //    }
+                    //}
 
                     result = await Socket.ReceiveAsync(new System.ArraySegment<byte>(buffer), CancellationToken.None);
 

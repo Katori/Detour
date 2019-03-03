@@ -1,20 +1,28 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using DetourServer;
+using DetourServer.Standalone;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace DetourServerExample
 {
     class Program
     {
-        static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             Server.RegisterHandler((int)MessageTypes.ClientSentTestMessage, typeof(ClientSentTestMessage), OnClientSentTestMessage);
             Server.UseRoomHandling(typeof(ClientRequestingRoomJoin), new RoomDefinition {RoomType = "Default", RoomCapacity = 100, OnRoomJoined = OnClientJoinedRoom });
             Server.ClientRemoved += Server_ClientRemoved;
             Server.ApplicationVersion = 0.1f;
             Server.DetourVersion = 0.2f;
-            Task task = StandaloneServer.StartDetourServer();
-            task.Wait();
+            //Task task = StandaloneServer.StartDetourServer();
+
+            var hostBuilder = new HostBuilder().ConfigureServices(services =>
+                services.AddHostedService<ListenService>()
+                .AddHostedService<SendService>());
+            //task.Wait();
+            await hostBuilder.RunConsoleAsync();
         }
 
         private static void Server_ClientRemoved(string obj)
