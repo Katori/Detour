@@ -128,6 +128,7 @@ namespace DetourServer
 
         public static void SendToRoomExcept(string RoomId, List<string> AddressesToExclude, DetourMessage Message)
         {
+            Console.WriteLine("Sending to all except " + AddressesToExclude.Count);
             Rooms[RoomId].SendToAllExcept(AddressesToExclude, Message);
         }
 

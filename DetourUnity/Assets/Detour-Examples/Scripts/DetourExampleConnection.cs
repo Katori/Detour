@@ -10,8 +10,10 @@ namespace Detour.Examples.Client
 
         private DetourConnection conn = new DetourConnection();
 
-        public List<string> RoomClientNames;
-        public List<Vector2> RoomClientPositions;
+        public List<PlayerDefinition> PlayersList;
+
+        internal Dictionary<string, PlayerDefinition> Players = new Dictionary<string, PlayerDefinition>();
+
         private string _Name;
 
         void Start()
@@ -57,14 +59,17 @@ namespace Detour.Examples.Client
         {
             var c = netMsg as ClientRoomDataCatchUp;
             Debug.Log("received room catchup data");
-            RoomClientNames = c.Names;
-            RoomClientPositions = c.Positions;
+            foreach (var item in c.Players)
+            {
+                AddPlayer(item);
+            }
         }
 
         private void OnClientJoinedRoom(DetourMessage netMsg)
         {
+            Debug.Log("Received RoomJoin");
             var c = netMsg as ClientJoinedRoomMessage;
-            RoomClientNames.Add(c.Name);
+            AddPlayer(c.Player);
         }
 
         private void Conn_Connected()
@@ -91,6 +96,12 @@ namespace Detour.Examples.Client
         private void OnDisable()
         {
             conn.Disconnect();
+        }
+
+        private void AddPlayer(PlayerDefinition PlayerToAdd)
+        {
+            PlayersList.Add(PlayerToAdd);
+            Players.Add(PlayerToAdd.Id, PlayerToAdd);
         }
     }
 }

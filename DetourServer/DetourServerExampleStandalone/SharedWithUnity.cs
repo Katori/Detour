@@ -21,8 +21,21 @@ namespace DetourServerExample
     [System.Serializable]
     public class ClientRoomDataCatchUp : DetourMessage
     {
-        public List<string> Names;
-        public List<Vector2> Positions;
+        public List<PlayerDefinition> Players;
+    }
+
+    [System.Serializable]
+    public class PlayerDefinition
+    {
+        public string Id;
+        public string Name;
+        public Vector2 Position;
+    }
+
+    [System.Serializable]
+    public class ClientJoinedRoomMessage : DetourMessage
+    {
+        public PlayerDefinition Player;
     }
 
     [System.Serializable]
@@ -36,12 +49,6 @@ namespace DetourServerExample
             this.x = x;
             this.y = y;
         }
-    }
-
-    [System.Serializable]
-    public class ClientJoinedRoomMessage : DetourMessage
-    {
-        public string Name;
     }
 
     [System.Serializable]

@@ -22,14 +22,21 @@ namespace Detour.Examples.Client
     [System.Serializable]
     public class ClientRoomDataCatchUp : DetourMessage
     {
-        public List<string> Names;
-        public List<Vector2> Positions;
+        public List<PlayerDefinition> Players;
+    }
+
+    [System.Serializable]
+    public class PlayerDefinition
+    {
+        public string Id;
+        public string Name;
+        public Vector2 Position;
     }
 
     [System.Serializable]
     public class ClientJoinedRoomMessage : DetourMessage
     {
-        public string Name;
+        public PlayerDefinition Player;
     }
 
     [System.Serializable]
