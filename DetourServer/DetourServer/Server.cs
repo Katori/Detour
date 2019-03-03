@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -21,6 +22,8 @@ namespace DetourServer
         private static Random Tumbler = new Random();
         public static float DetourVersion;
         public static float ApplicationVersion;
+
+        public static ConcurrentQueue<SendableMessage> MessagesToSend = new ConcurrentQueue<SendableMessage>();
 
         public static void StoreClientData(string address, string v, dynamic Data)
         {
@@ -54,8 +57,11 @@ namespace DetourServer
         /// </summary> 
         public static void SendMessage(string Address, DetourMessage Message)
         {
-            //AllClients[Address].EnqueuedMessagesToSend.Add(Message);
-            AllClients[Address].EnqueuedMessagesToSend.Enqueue(Message);
+            MessagesToSend.Enqueue(new SendableMessage
+            {
+                Address = Address,
+                Message = Message
+            });
         }
 
         /// <summary>  
@@ -81,12 +87,17 @@ namespace DetourServer
                     item.RoomClients.Remove(clientContainer.Id);
                     foreach (var item2 in item.RoomClients.Values)
                     {
-                        item2.EnqueuedMessagesToSend.Enqueue(new PlayerRemovedMessage {
-                            ApplicationVersion = Server.ApplicationVersion,
-                            DetourVersion = DetourVersion,
-                            MessageType = 5,
-                            Id = clientContainer.Id,
-                            RoomId = item.RoomId
+                        Server.MessagesToSend.Enqueue(new SendableMessage
+                        {
+                            Address = item2.Id,
+                            Message = new PlayerRemovedMessage
+                            {
+                                ApplicationVersion = Server.ApplicationVersion,
+                                DetourVersion = DetourVersion,
+                                MessageType = 5,
+                                Id = clientContainer.Id,
+                                RoomId = item.RoomId
+                            }
                         });
                     }
                 }

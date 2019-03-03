@@ -28,5 +28,12 @@
         public System.Type Type;
     }
 
+    [System.Serializable]
+    public class SendableMessage
+    {
+        public string Address;
+        public DetourMessage Message;
+    }
+
     public delegate void MessageEventHandler(string Address, DetourMessage netMsg);
 }

@@ -15,17 +15,15 @@ namespace DetourServer.Standalone
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                if (Server.AllClients.Count > 0)
+                if(Server.MessagesToSend.Count > 0)
                 {
-                    foreach (var item in Server.AllClients)
+                    SendableMessage sendMsg;
+                    var msgToSend = Server.MessagesToSend.TryDequeue(out sendMsg);
+                    if (msgToSend)
                     {
-                        if (item.Value.EnqueuedMessagesToSend.Count > 0)
-                        {
-                            var msg = item.Value.EnqueuedMessagesToSend.Dequeue(); 
-                            var JSONBuffer = JsonConvert.SerializeObject(msg);
-                            var MessageBuffer = Encoding.UTF8.GetBytes(JSONBuffer);
-                            await item.Value.Socket.SendAsync(new System.ArraySegment<byte>(MessageBuffer, 0, MessageBuffer.Length), WebSocketMessageType.Text, true, CancellationToken.None);
-                        }
+                        var JSONBufffer = JsonConvert.SerializeObject(sendMsg.Message);
+                        var MessageBuffer = Encoding.UTF8.GetBytes(JSONBufffer);
+                        await Server.AllClients[sendMsg.Address].Socket.SendAsync(new System.ArraySegment<byte>(MessageBuffer, 0, MessageBuffer.Length), WebSocketMessageType.Text, true, stoppingToken);
                     }
                 }
             }

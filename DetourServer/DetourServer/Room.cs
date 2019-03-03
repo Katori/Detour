@@ -18,7 +18,11 @@ namespace DetourServer
         {
             foreach (var item in RoomClients.Values)
             {
-                item.EnqueuedMessagesToSend.Enqueue(message);
+                Server.MessagesToSend.Enqueue(new SendableMessage
+                {
+                    Address = item.Id,
+                    Message = message
+                });
             }
         }
 
@@ -48,7 +52,11 @@ namespace DetourServer
             var p = RoomClients.Where(x => addressesToExclude.Contains(x.Key) != true).ToList();
             foreach (var item in p)
             {
-                item.Value.EnqueuedMessagesToSend.Enqueue(message);
+                Server.MessagesToSend.Enqueue(new SendableMessage
+                {
+                    Address = item.Key,
+                    Message = message
+                });
             }
         }
     }
