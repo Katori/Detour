@@ -92,7 +92,7 @@ namespace DetourClient
             MessageTypeToMessageDefinition.Add(MessageType, new MessageDefinition { Type = MessageClass, EventHandler = Handler });
         }
 
-        public async void Send()
+        public void Send()
         {
             if (WebSocket == null)
             {
@@ -102,7 +102,7 @@ namespace DetourClient
 
             if (EnqueuedMessagesToSend.Count > 0)
             {
-                await SendEnqueuedMessages(EnqueuedMessagesToSend);
+                SendEnqueuedMessages(EnqueuedMessagesToSend);
                 EnqueuedMessagesToSend = new List<DetourMessage>();
             }
         }
@@ -171,21 +171,24 @@ namespace DetourClient
             }
         }
 
-        private async Task SendEnqueuedMessages(List<DetourMessage> enqueuedMessagesToSend)
+        private async void SendEnqueuedMessages(List<DetourMessage> enqueuedMessagesToSend)
         {
             foreach (var item in enqueuedMessagesToSend)
             {
-                try
+                if (ConnectionActive)
                 {
-                    JSONBuffer = JsonConvert.SerializeObject(item, JSONSettings);
-                    MessageBuffer = Encoding.UTF8.GetBytes(JSONBuffer);
-                    await WebSocket.SendAsync(new ArraySegment<byte>(MessageBuffer, 0, MessageBuffer.Length), WebSocketMessageType.Text, true, CancellationToken.None);
-                }
-                catch (Exception ex)
-                {
-                    Debug.LogError(ex);
-                    Disconnect();
-                    ReceivedError?.Invoke(ex);
+                    try
+                    {
+                        JSONBuffer = JsonConvert.SerializeObject(item, JSONSettings);
+                        MessageBuffer = Encoding.UTF8.GetBytes(JSONBuffer);
+                        await WebSocket.SendAsync(new ArraySegment<byte>(MessageBuffer, 0, MessageBuffer.Length), WebSocketMessageType.Text, true, CancellationToken.None);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.LogError(ex);
+                        Disconnect();
+                        ReceivedError?.Invoke(ex);
+                    }
                 }
             }
         }
