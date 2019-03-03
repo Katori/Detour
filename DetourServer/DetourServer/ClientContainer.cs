@@ -14,7 +14,7 @@ namespace DetourServer
 
         public WebSocket Socket;
 
-        public List<dynamic> EnqueuedMessagesToSend = new List<dynamic>();
+        public Queue<dynamic> EnqueuedMessagesToSend = new Queue<dynamic>();
         public Dictionary<string, dynamic> StoredData = new Dictionary<string, dynamic>();
 
         private string JSONBuffer;

@@ -13,7 +13,7 @@ namespace DetourServer.Standalone
     {
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            while (true)
+            while (!stoppingToken.IsCancellationRequested)
             {
                 if (Server.AllClients.Count > 0)
                 {
@@ -21,13 +21,10 @@ namespace DetourServer.Standalone
                     {
                         if (item.Value.EnqueuedMessagesToSend.Count > 0)
                         {
-                            foreach (var Message in item.Value.EnqueuedMessagesToSend)
-                            {
-                                var JSONBuffer = JsonConvert.SerializeObject(Message);
-                                var MessageBuffer = Encoding.UTF8.GetBytes(JSONBuffer);
-                                await item.Value.Socket.SendAsync(new System.ArraySegment<byte>(MessageBuffer, 0, MessageBuffer.Length), WebSocketMessageType.Text, true, CancellationToken.None);
-                                item.Value.EnqueuedMessagesToSend.Remove(item);
-                            }
+                            var msg = item.Value.EnqueuedMessagesToSend.Dequeue(); 
+                            var JSONBuffer = JsonConvert.SerializeObject(msg);
+                            var MessageBuffer = Encoding.UTF8.GetBytes(JSONBuffer);
+                            await item.Value.Socket.SendAsync(new System.ArraySegment<byte>(MessageBuffer, 0, MessageBuffer.Length), WebSocketMessageType.Text, true, CancellationToken.None);
                         }
                     }
                 }
