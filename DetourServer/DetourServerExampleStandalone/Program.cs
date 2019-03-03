@@ -10,6 +10,8 @@ namespace DetourServerExample
         {
             Server.RegisterHandler((int)MessageTypes.ClientSentTestMessage, typeof(ClientSentTestMessage), OnClientSentTestMessage);
             Server.UseRoomHandling(typeof(ClientRequestingRoomJoin), new RoomDefinition {RoomType = "Default", RoomCapacity = 2, OnRoomJoined = OnClientJoinedRoom });
+            Server.ApplicationVersion = 0.1f;
+            Server.DetourVersion = 0.2f;
             Task task = StandaloneServer.StartDetourServer();
             task.Wait();
         }
@@ -20,7 +22,7 @@ namespace DetourServerExample
             var p = RoomMessage as ClientRequestingRoomJoin;
             Server.StoreClientData(Address, "Name", p.Name);
             Server.StoreClientData(Address, "Position", new Vector2(1, 1));
-            Server.SendToRoomExcept(RoomId, new List<string>(new string[] { Address }), new ClientJoinedRoomMessage() {MessageType = (int)MessageTypes.ClientJoinedRoomMessage, Name = p.Name });
+            Server.SendToRoomExcept(RoomId, new List<string>(new string[] { Address }), new ClientJoinedRoomMessage() {ApplicationVersion = Server.ApplicationVersion, DetourVersion = Server.DetourVersion, RoomId = RoomId, MessageType = (int)MessageTypes.ClientJoinedRoomMessage, Name = p.Name });
             var c = new List<string>();
             var lV = new List<Vector2>();
             foreach (var item in Server.Rooms[RoomId].RoomClients.Values)
@@ -31,7 +33,7 @@ namespace DetourServerExample
                     lV.Add(item.StoredData["Position"] as Vector2);
                 }
             }
-            Server.SendMessage(Address, new ClientRoomDataCatchUp { MessageType = (int)MessageTypes.ClientRoomDataCatchUp, Names = c, Positions = lV });
+            Server.SendMessage(Address, new ClientRoomDataCatchUp { DetourVersion = Server.DetourVersion, ApplicationVersion = Server.ApplicationVersion, RoomId = RoomId, MessageType = (int)MessageTypes.ClientRoomDataCatchUp, Names = c, Positions = lV });
             System.Console.WriteLine("sent roomdatacatchup message");
         }
 

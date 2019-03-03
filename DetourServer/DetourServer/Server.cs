@@ -18,6 +18,8 @@ namespace DetourServer
         public static Dictionary<string, Room> Rooms = new Dictionary<string, Room>();
 
         private static Random Tumbler = new Random();
+        public static float DetourVersion;
+        public static float ApplicationVersion;
 
         public static void StoreClientData(string address, string v, dynamic Data)
         {

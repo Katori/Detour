@@ -4,8 +4,8 @@
     public class DetourMessage
     {
         public int MessageType;
-        public string DetourVersion;
-        public string ApplicationVersion;
+        public float DetourVersion;
+        public float ApplicationVersion;
         public string RoomId;
     }
 

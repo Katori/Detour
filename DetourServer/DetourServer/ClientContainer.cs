@@ -22,7 +22,7 @@ namespace DetourServer
 
         JsonSerializerSettings jsonSettings = new JsonSerializerSettings()
         {
-            TypeNameHandling = TypeNameHandling.Objects
+            TypeNameHandling = TypeNameHandling.Auto
         };
 
         public ClientContainer(string _Id, WebSocket _Socket)
