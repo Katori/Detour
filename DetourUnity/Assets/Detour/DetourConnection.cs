@@ -13,7 +13,7 @@ namespace DetourClient
         public event System.Action<System.Exception> ReceivedError;
 
         public bool Connecting { get { return Client.Connecting; } }
-        public bool ConnectionActive { get { return Client.ConnectionActive; } }
+        public bool ConnectionActive = false;
 
         public Dictionary<int, MessageDefinition> MessageTypeToMessageDefinition = new Dictionary<int, MessageDefinition>();
 
@@ -45,11 +45,13 @@ namespace DetourClient
 
         private void Client_Disconnected()
         {
+            ConnectionActive = false;
             Disconnected.Invoke();
         }
 
         private void Client_Connected()
         {
+            ConnectionActive = true;
             Connected.Invoke();
         }
 

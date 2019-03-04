@@ -5,7 +5,7 @@ var LibraryWebSockets = {
 	{
 		var str = Pointer_stringify(url);
 
-		var socket = new WebSocket(str, "binary");
+		var socket = new WebSocket(str, "Detour");
 
 		socket.binaryType = 'arraybuffer';
 

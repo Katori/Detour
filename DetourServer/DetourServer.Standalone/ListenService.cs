@@ -14,7 +14,7 @@ namespace DetourServer.Standalone
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            IList<string> supportedSubProtocols = new string[] { "chat" };
+            IList<string> supportedSubProtocols = new string[] { "Detour" };
             using (WebServer server = new WebServer(_webSocketServerFactory, supportedSubProtocols, "/game"))
             {
                 await server.Listen(27416);
