@@ -1,84 +1,71 @@
-﻿using Ninja.WebSockets;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.WebSockets;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Text;
 using UnityEngine;
-using System.Net.Sockets;
 
 namespace DetourClient
 {
     public class DetourConnection
     {
-        public event Action Connected;
-        public event Action Disconnected;
-        public event Action<Exception> ReceivedError;
+        public event System.Action Connected;
+        public event System.Action Disconnected;
+        public event System.Action<System.Exception> ReceivedError;
 
-        public bool Connecting { get; private set; }
-        public bool ConnectionActive { get; private set; }
+        public bool Connecting { get { return Client.Connecting; } }
+        public bool ConnectionActive { get { return Client.ConnectionActive; } }
 
         public Dictionary<int, MessageDefinition> MessageTypeToMessageDefinition = new Dictionary<int, MessageDefinition>();
 
         public List<DetourMessage> EnqueuedMessagesToSend = new List<DetourMessage>();
 
-        private WebSocket WebSocket;
-
-        private System.Uri Uri;
-
         private string JSONBuffer;
         private byte[] MessageBuffer;
-
-        private CancellationTokenSource cancellation;
         
         private JsonSerializerSettings JSONSettings = new JsonSerializerSettings
         {
             TypeNameHandling = TypeNameHandling.Auto
         };
 
-        private WebSocketClientOptions ClientOptions = new WebSocketClientOptions
+        private DetourClient Client = new DetourClient();
+
+        public void Connect(System.Uri uri)
         {
-            NoDelay = true
-        };
+            Client.Connected += Client_Connected;
+            Client.ReceivedData += Client_ReceivedData;
+            Client.Disconnected += Client_Disconnected;
+            Client.ReceivedError += Client_ReceivedError;
+            Client.Connect(uri);
+        }
 
-        public async void Connect(System.Uri uri)
+        private void Client_ReceivedError(System.Exception obj)
         {
-            var clientFactory = new WebSocketClientFactory();
+            ReceivedError.Invoke(obj);
+        }
 
-            cancellation = new CancellationTokenSource();
+        private void Client_Disconnected()
+        {
+            Disconnected.Invoke();
+        }
 
-            Connecting = true;
+        private void Client_Connected()
+        {
+            Connected.Invoke();
+        }
 
-            Uri = uri;
+        private void Client_ReceivedData(byte[] obj)
+        {
             try
             {
-                using (WebSocket = await clientFactory.ConnectAsync(Uri, ClientOptions, cancellation.Token))
+                var msg = ProcessJsonToDetourMessage(obj, obj.Length);
+                if (msg != null)
                 {
-                    Connecting = false;
-                    ConnectionActive = true;
-                    Connected?.Invoke();
-
-                    await Receive(WebSocket, cancellation.Token);
+                    ReceivedMessage(msg);
                 }
-            }
-            catch (ObjectDisposedException)
-            {
-                // client closed
-                Debug.Log("closed connection");
             }
             catch (System.Exception ex)
             {
                 Debug.LogError(ex);
-                ReceivedError?.Invoke(ex);
-            }
-            finally
-            {
-                Disconnect();
             }
         }
 
@@ -87,16 +74,16 @@ namespace DetourClient
             EnqueuedMessagesToSend.Add(Message);
         }
 
-        public void RegisterHandler(int MessageType, Type MessageClass, MessageEventHandler Handler)
+        public void RegisterHandler(int MessageType, System.Type MessageClass, MessageEventHandler Handler)
         {
             MessageTypeToMessageDefinition.Add(MessageType, new MessageDefinition { Type = MessageClass, EventHandler = Handler });
         }
 
         public void Send()
         {
-            if (WebSocket == null)
+            if (Client.ConnectionActive == false)
             {
-                ReceivedError?.Invoke(new SocketException((int)SocketError.NotConnected));
+                ReceivedError?.Invoke(new System.Net.Sockets.SocketException((int)System.Net.Sockets.SocketError.NotConnected));
                 return;
             }
 
@@ -104,62 +91,6 @@ namespace DetourClient
             {
                 SendEnqueuedMessages(EnqueuedMessagesToSend);
                 EnqueuedMessagesToSend = new List<DetourMessage>();
-            }
-        }
-
-        public void Disconnect()
-        {
-            cancellation?.Cancel();
-            if (WebSocket != null)
-            {
-                WebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "", CancellationToken.None);
-                WebSocket = null;
-                Connecting = false;
-                ConnectionActive = false;
-                Disconnected?.Invoke();
-            }
-        }
-
-        private async Task Receive(WebSocket webSocket, CancellationToken token)
-        {
-            var buffer = new byte[int.MaxValue];
-
-            while (true)
-            {
-
-                WebSocketReceiveResult result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), token);
-
-                if (result == null)
-                {
-                    break;
-                }
-                if (result.MessageType == WebSocketMessageType.Close)
-                {
-                    break;
-                }
-                byte[] data = await ReadFrames(result, webSocket, buffer);
-
-                if (data == null)
-                {
-                    break;
-                }
-
-                try
-                {
-                    var msg = ProcessJsonToDetourMessage(data, data.Length);
-                    if (msg != null)
-                    {
-                        ReceivedMessage(msg);
-                    }
-                }
-                catch(Newtonsoft.Json.JsonReaderException ex)
-                {
-                    Debug.LogError(ex);
-                }
-                catch(System.Exception ex)
-                {
-                    Debug.LogError(ex);
-                }
             }
         }
 
@@ -171,7 +102,7 @@ namespace DetourClient
             }
         }
 
-        private async void SendEnqueuedMessages(List<DetourMessage> enqueuedMessagesToSend)
+        private void SendEnqueuedMessages(List<DetourMessage> enqueuedMessagesToSend)
         {
             foreach (var item in enqueuedMessagesToSend)
             {
@@ -181,12 +112,12 @@ namespace DetourClient
                     {
                         JSONBuffer = JsonConvert.SerializeObject(item, JSONSettings);
                         MessageBuffer = Encoding.UTF8.GetBytes(JSONBuffer);
-                        await WebSocket.SendAsync(new ArraySegment<byte>(MessageBuffer, 0, MessageBuffer.Length), WebSocketMessageType.Text, true, CancellationToken.None);
+                        Client.Send(MessageBuffer);
                     }
-                    catch (Exception ex)
+                    catch (System.Exception ex)
                     {
                         Debug.LogError(ex);
-                        Disconnect();
+                        Client.Disconnect();
                         ReceivedError?.Invoke(ex);
                     }
                 }
@@ -207,23 +138,9 @@ namespace DetourClient
             }
         }
 
-        private async Task<byte[]> ReadFrames(WebSocketReceiveResult result, WebSocket webSocket, byte[] buffer)
+        public void Disconnect()
         {
-            int count = result.Count;
-
-            while (!result.EndOfMessage)
-            {
-                if (count >= int.MaxValue)
-                {
-                    string closeMessage = string.Format("Maximum message size: {0} bytes.", int.MaxValue);
-                    await webSocket.CloseAsync(WebSocketCloseStatus.MessageTooBig, closeMessage, CancellationToken.None);
-                    return null;
-                }
-
-                result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer, count, int.MaxValue - count), CancellationToken.None);
-                count += result.Count;
-            }
-            return new ArraySegment<byte>(buffer, 0, count).ToArray();
+            Client.Disconnect();
         }
     }
 }
