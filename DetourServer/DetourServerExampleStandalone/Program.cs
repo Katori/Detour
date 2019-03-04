@@ -36,12 +36,16 @@ namespace DetourServerExample
         {
             System.Console.WriteLine("made it to roomjoined ");
             var p = RoomMessage as ClientRequestingRoomJoin;
+            var _startPos = RanGen.Next(0, Server.Rooms[RoomId].RoomStartPoints);
             var Pl = new PlayerDefinition
             {
                 Id = Address,
                 Name = p.Name,
-                Position = new Vector2(1, 1)
+                Position = new Vector2(1, 1),
+                HasMoved = false,
+                StartPosition = _startPos
             };
+            
             Server.StoreClientData(Address, "Player", Pl);
             Server.SendToRoomExcept(RoomId, new List<string>(new string[] { Address }), new ClientJoinedRoomMessage() {ApplicationVersion = Server.ApplicationVersion, DetourVersion = Server.DetourVersion, RoomId = RoomId, MessageType = (int)MessageTypes.ClientJoinedRoomMessage,  Player = Pl });
             var PlayerList = new List<PlayerDefinition>();
@@ -52,7 +56,7 @@ namespace DetourServerExample
                     PlayerList.Add(item.StoredData["Player"] as PlayerDefinition);
                 }
             }
-            Server.SendMessage(Address, new ClientRoomDataCatchUp { DetourVersion = Server.DetourVersion, ApplicationVersion = Server.ApplicationVersion, RoomId = RoomId, MessageType = (int)MessageTypes.ClientRoomDataCatchUp, Players = PlayerList, ClientStartPosition = RanGen.Next(0, Server.Rooms[RoomId].RoomStartPoints)});
+            Server.SendMessage(Address, new ClientRoomDataCatchUp { DetourVersion = Server.DetourVersion, ApplicationVersion = Server.ApplicationVersion, RoomId = RoomId, MessageType = (int)MessageTypes.ClientRoomDataCatchUp, Players = PlayerList, ClientStartPosition = _startPos });
             System.Console.WriteLine("sent roomdatacatchup message");
         }
 

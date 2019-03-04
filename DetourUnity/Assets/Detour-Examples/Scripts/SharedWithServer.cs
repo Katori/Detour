@@ -32,6 +32,8 @@ namespace Detour.Examples.Client
         public string Id;
         public string Name;
         public Vector2 Position;
+        public bool HasMoved;
+        public int StartPosition;
     }
 
     [System.Serializable]

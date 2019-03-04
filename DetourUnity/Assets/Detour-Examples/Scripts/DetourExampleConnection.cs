@@ -97,15 +97,10 @@ namespace Detour.Examples.Client
             AddPlayer(new PlayerDefinition
             {
                 Id = "0",
-                Name = _Name
-            }, c.ClientStartPosition);
-        }
-
-        private void AddPlayer(PlayerDefinition playerDefinition, int clientStartPosition)
-        {
-            var c = StartPoints[clientStartPosition];
-            playerDefinition.Position = new Vector2(c.position.x, c.position.z);
-            AddPlayer(playerDefinition);
+                Name = _Name,
+                HasMoved = false,
+                StartPosition = c.ClientStartPosition
+            });
         }
 
         private void OnClientJoinedRoom(DetourMessage netMsg)
@@ -147,6 +142,11 @@ namespace Detour.Examples.Client
             Players.Add(PlayerToAdd.Id, PlayerToAdd);
             var c = Instantiate(PlayerPrefab);
             PlayerObjects.Add(PlayerToAdd.Id, c);
+            if (!PlayerToAdd.HasMoved)
+            {
+                var b = StartPoints[PlayerToAdd.StartPosition];
+                PlayerToAdd.Position = new Vector2(b.position.x, b.position.z);
+            }
             PlayerObjects[PlayerToAdd.Id].transform.position = new Vector3(PlayerToAdd.Position.x, 0, PlayerToAdd.Position.y);
         }
     }
