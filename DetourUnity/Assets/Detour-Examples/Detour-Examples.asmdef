@@ -1,7 +1,8 @@
 {
     "name": "Detour-Examples",
     "references": [
-        "Detour"
+        "Detour",
+        "HexGridMapLibrary"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [],
