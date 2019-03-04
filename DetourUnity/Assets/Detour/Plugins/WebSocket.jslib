@@ -40,6 +40,11 @@ var LibraryWebSockets = {
 				var reader = new FileReader();
 				reader.addEventListener("loadend", function() {
 					var array = new Uint8Array(reader.result);
+					var ptr = _malloc(array.length);
+					var dataHeap = new Uint8Array(HEAPU8.buffer, ptr, array.length);
+					dataHeap.set(array);
+					Runtime.dynCall('viii', ondata, [id, ptr, array.length]);
+					_free(ptr);
 				});
 				var blob = new Blob([e.data]);
 				reader.readAsArrayBuffer(blob);
