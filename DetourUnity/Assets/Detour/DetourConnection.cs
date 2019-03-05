@@ -129,6 +129,7 @@ namespace DetourClient
         private DetourMessage ProcessJsonToDetourMessage(byte[] JsonBuffer, int ByteLength)
         {
             JSONBuffer = Encoding.UTF8.GetString(JsonBuffer, 0, ByteLength);
+            Debug.Log(JSONBuffer);
             JObject jObject = JObject.Parse(JSONBuffer);
             if (jObject.HasValues && jObject.Property("MessageType")!=null)
             {

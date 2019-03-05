@@ -102,6 +102,7 @@ namespace Detour.Examples.Client
                 StartPosition = c.ClientStartPosition
             });
             ExampleGameController.Instance.SetTiles(c.MapTiles);
+            Debug.Log("Map size detected: " + c.MapSize);
             MapControllerComponent.Instance.RenderMap(c.MapTiles, c.MapSize);
         }
 
