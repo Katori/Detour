@@ -15,6 +15,9 @@ namespace Detour.Examples.Client
         [SerializeField] Material[] materials;
         private TileData[,] tiles;
 
+        [SerializeField]
+        private Transform MapContainer;
+
         private void Start()
         {
             if (Instance == null)
@@ -48,16 +51,17 @@ namespace Detour.Examples.Client
                 for (int u = 0; u < MapSize.y; u++)
                 {
                     var tile = tiles[i, u];
-                    var c = Instantiate(tilePrefab);
+                    var c = Instantiate(tilePrefab, MapContainer);
                     c.transform.position = new Vector3(i, 0, u);
                     c.GetComponent<MeshRenderer>().material = materials[tile.terrainType];
                     if (tile.forest)
                     {
-                        var b = Instantiate(forestPrefab);
+                        var b = Instantiate(forestPrefab, MapContainer);
                         b.transform.position = new Vector3(i, 0, u);
                     }
                 }
             }
+            MapContainer.position = new Vector3(MapSize.x / -2, 0, MapSize.y/-2);
         }
 
         //void Update()
