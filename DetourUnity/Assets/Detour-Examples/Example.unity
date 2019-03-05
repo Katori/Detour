@@ -338,6 +338,7 @@ GameObject:
   m_Component:
   - component: {fileID: 95750683}
   - component: {fileID: 95750684}
+  - component: {fileID: 95750685}
   m_Layer: 0
   m_Name: DetourConnection
   m_TagString: Untagged
@@ -377,6 +378,25 @@ MonoBehaviour:
   - {fileID: 209170106}
   - {fileID: 955910781}
   - {fileID: 357100686}
+--- !u!114 &95750685
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 95750682}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 39479a76f5783b64ab4765d9aeea175f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tilePrefab: {fileID: 1752008957146982, guid: c5aef4fb1f6e8f4438e70fb3112ab7af, type: 2}
+  forestPrefab: {fileID: 1136465227927174, guid: b797d4e28dd69b44e83926a47b12e741,
+    type: 2}
+  materials:
+  - {fileID: 2100000, guid: 687e19a033a3b08488e794364dfa61b8, type: 2}
+  - {fileID: 2100000, guid: 0a6277d623c77ea458ead6cd31cf9995, type: 2}
+  - {fileID: 2100000, guid: aa6a6994d88e1b94ea89b2065b6244f1, type: 2}
+  - {fileID: 2100000, guid: 72ffabb989aa3524db070f795c8c5c74, type: 2}
 --- !u!1 &99526083
 GameObject:
   m_ObjectHideFlags: 0

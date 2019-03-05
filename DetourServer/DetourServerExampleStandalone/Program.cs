@@ -14,7 +14,7 @@ namespace DetourServerExample
         public static async Task Main(string[] args)
         {
             Server.RegisterHandler((int)MessageTypes.ClientSentTestMessage, typeof(ClientSentTestMessage), OnClientSentTestMessage);
-            Server.UseRoomHandling(typeof(ClientRequestingRoomJoin), new RoomDefinition {RoomType = "Default", RoomCapacity = 100, StartPoints = 4, OnRoomJoined = OnClientJoinedRoom });
+            Server.UseRoomHandling(typeof(ClientRequestingRoomJoin), new RoomDefinition {RoomType = "Default", RoomCapacity = 100, StartPoints = 4, OnRoomJoined = OnClientJoinedRoom, OnRoomInitialized = OnRoomInit });
             Server.ClientRemoved += Server_ClientRemoved;
             Server.ApplicationVersion = 0.1f;
             Server.DetourVersion = 0.2f;
@@ -25,6 +25,28 @@ namespace DetourServerExample
                 .AddHostedService<SendService>());
             //task.Wait();
             await hostBuilder.RunConsoleAsync();
+        }
+
+        private static void OnRoomInit(string RoomId, string RoomType)
+        {
+            Vector2Int MapSize = new Vector2Int(25,25);
+            TileData[,] Tiles = new TileData[MapSize.x,MapSize.y];
+            Server.Rooms[RoomId].StoreRoomData("MapSize", MapSize);
+            var TileSize = MapSize.x * MapSize.y;
+            for (int i = 0; i < MapSize.x; i++)
+            {
+                for (int u = 0; u < MapSize.y; u++)
+                {
+                    int terrainType = RanGen.Next(1, 4);                    
+                    if (i==0 || i == MapSize.x-1 || u == 0 || u == MapSize.y-1)
+                    {
+                        terrainType = 0;
+                    }
+                    bool forest = (RanGen.NextDouble() > 0.7f && terrainType != 0);
+                    Tiles[i,u] = new TileData(terrainType, forest);
+                }
+            }
+            Server.Rooms[RoomId].StoreRoomData("TileData", Tiles);
         }
 
         private static void Server_ClientRemoved(string obj)
@@ -56,7 +78,16 @@ namespace DetourServerExample
                     PlayerList.Add(item.StoredData["Player"] as PlayerDefinition);
                 }
             }
-            Server.SendMessage(Address, new ClientRoomDataCatchUp { DetourVersion = Server.DetourVersion, ApplicationVersion = Server.ApplicationVersion, RoomId = RoomId, MessageType = (int)MessageTypes.ClientRoomDataCatchUp, Players = PlayerList, ClientStartPosition = _startPos });
+            Server.SendMessage(Address, new ClientRoomDataCatchUp {
+                DetourVersion = Server.DetourVersion,
+                ApplicationVersion = Server.ApplicationVersion,
+                RoomId = RoomId,
+                MessageType = (int)MessageTypes.ClientRoomDataCatchUp,
+                Players = PlayerList,
+                ClientStartPosition = _startPos,
+                MapSize = Server.Rooms[RoomId].RoomData["MapSize"] as Vector2Int,
+                MapTiles = Server.Rooms[RoomId].RoomData["TileData"] as TileData[,]
+            });
             System.Console.WriteLine("sent roomdatacatchup message");
         }
 

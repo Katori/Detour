@@ -143,6 +143,7 @@ namespace DetourServer
                 _roomId = RoomId;
             }
             Rooms.Add(_roomId, new Room { RoomId = _roomId, RoomType = RoomType, RoomClientCapacity = c.RoomCapacity, PrivateRoom = privateRoom });
+            c.OnRoomInitialized.Invoke(_roomId, RoomType);
         }
 
         public static void SendToRoom(string RoomId, DetourMessage Message)
@@ -171,6 +172,7 @@ namespace DetourServer
                 var _newRoomId = System.Guid.NewGuid().ToString();
                 var RequestedRoomType = RoomTypes[RoomTypeRequested];
                 Rooms.Add(_newRoomId, new Room {RoomId = _newRoomId, RoomClientCapacity = RequestedRoomType.RoomCapacity, RoomType = RequestedRoomType.RoomType, RoomStartPoints = RequestedRoomType.StartPoints });
+                RoomTypes[RoomTypeRequested].OnRoomInitialized.Invoke(_newRoomId, RoomTypeRequested);
                 Rooms[_newRoomId].AddToRoom(ClientToMatch);
                 Console.WriteLine("client added to new room");
                 return _newRoomId;

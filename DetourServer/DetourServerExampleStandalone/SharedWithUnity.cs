@@ -23,6 +23,8 @@ namespace DetourServerExample
     {
         public List<PlayerDefinition> Players;
         public int ClientStartPosition;
+        public Vector2Int MapSize;
+        public TileData[,] MapTiles;
     }
 
     [System.Serializable]
@@ -42,6 +44,25 @@ namespace DetourServerExample
     }
 
     [System.Serializable]
+    public class ClientRequestingRoomJoin : RoomRequestMessage
+    {
+        public string Name;
+    }
+
+    [System.Serializable]
+    public class TileData
+    {
+        public int terrainType;
+        public bool forest;
+
+        public TileData(int terrainType, bool forest)
+        {
+            this.terrainType = terrainType;
+            this.forest = forest;
+        }
+    }
+
+    [System.Serializable]
     public class Vector2
     {
         public float x;
@@ -55,8 +76,15 @@ namespace DetourServerExample
     }
 
     [System.Serializable]
-    public class ClientRequestingRoomJoin : RoomRequestMessage
+    public class Vector2Int
     {
-        public string Name;
+        public int x;
+        public int y;
+
+        public Vector2Int(int x, int y)
+        {
+            this.x = x;
+            this.y = y;
+        }
     }
 }

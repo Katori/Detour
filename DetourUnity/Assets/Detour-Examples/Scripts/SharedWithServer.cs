@@ -24,6 +24,8 @@ namespace Detour.Examples.Client
     {
         public List<PlayerDefinition> Players;
         public int ClientStartPosition;
+        public Vector2Int MapSize;
+        public TileData[,] MapTiles;
     }
 
     [System.Serializable]
@@ -46,5 +48,18 @@ namespace Detour.Examples.Client
     public class ClientRequestingRoomJoin : RoomRequestMessage
     {
         public string Name;
+    }
+
+    [System.Serializable]
+    public class TileData
+    {
+        public int terrainType;
+        public bool forest;
+
+        public TileData(int terrainType, bool forest)
+        {
+            this.terrainType = terrainType;
+            this.forest = forest;
+        }
     }
 }

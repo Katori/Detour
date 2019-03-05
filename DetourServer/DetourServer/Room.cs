@@ -15,6 +15,8 @@ namespace DetourServer
 
         public Dictionary<string, ClientContainer> RoomClients = new Dictionary<string, ClientContainer>();
 
+        public Dictionary<string, dynamic> RoomData = new Dictionary<string, dynamic>();
+
         public void SendToAll(DetourMessage message)
         {
             foreach (var item in RoomClients.Values)
@@ -46,6 +48,11 @@ namespace DetourServer
             {
                 return false;
             }
+        }
+
+        public void StoreRoomData(string Key, dynamic Item)
+        {
+            RoomData.Add(Key, Item);
         }
 
         public void SendToAllExcept(List<string> addressesToExclude, DetourMessage message)

@@ -101,6 +101,7 @@ namespace Detour.Examples.Client
                 HasMoved = false,
                 StartPosition = c.ClientStartPosition
             });
+            MapControllerComponent.Instance.RenderMap(c.MapTiles, c.MapSize);
         }
 
         private void OnClientJoinedRoom(DetourMessage netMsg)
