@@ -338,6 +338,7 @@ GameObject:
   m_Component:
   - component: {fileID: 95750683}
   - component: {fileID: 95750684}
+  - component: {fileID: 95750686}
   - component: {fileID: 95750685}
   m_Layer: 0
   m_Name: DetourConnection
@@ -398,6 +399,17 @@ MonoBehaviour:
   - {fileID: 2100000, guid: aa6a6994d88e1b94ea89b2065b6244f1, type: 2}
   - {fileID: 2100000, guid: 72ffabb989aa3524db070f795c8c5c74, type: 2}
   MapContainer: {fileID: 939181708}
+--- !u!114 &95750686
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 95750682}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 022371df64d6b6a45b88aa40baf99daf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &99526083
 GameObject:
   m_ObjectHideFlags: 0
@@ -1224,6 +1236,7 @@ GameObject:
   - component: {fileID: 534669905}
   - component: {fileID: 534669904}
   - component: {fileID: 534669903}
+  - component: {fileID: 534669906}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: Untagged
@@ -1291,6 +1304,21 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 45.000004, y: 0, z: 0}
+--- !u!114 &534669906
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 534669902}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -768656878, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_EventMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_MaxRayIntersections: 0
 --- !u!1 &552296771
 GameObject:
   m_ObjectHideFlags: 0

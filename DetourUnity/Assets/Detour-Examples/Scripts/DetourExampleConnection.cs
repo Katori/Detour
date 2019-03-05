@@ -101,6 +101,7 @@ namespace Detour.Examples.Client
                 HasMoved = false,
                 StartPosition = c.ClientStartPosition
             });
+            ExampleGameController.Instance.SetTiles(c.MapTiles);
             MapControllerComponent.Instance.RenderMap(c.MapTiles, c.MapSize);
         }
 

@@ -59,6 +59,8 @@ namespace Detour.Examples.Client
                         var b = Instantiate(forestPrefab, MapContainer);
                         b.transform.position = new Vector3(i, 0, u);
                     }
+                    var l = c.GetComponent<MapCellComponent>();
+                    l.Position = new Vector2Int(i, u);
                 }
             }
             MapContainer.position = new Vector3(MapSize.x / -2, 0, MapSize.y/-2);
