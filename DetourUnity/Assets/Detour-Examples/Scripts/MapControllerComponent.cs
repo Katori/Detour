@@ -54,6 +54,7 @@ namespace Detour.Examples.Client
                     var tile = tiles[i, u];
                     var c = Instantiate(tilePrefab, MapContainer);
                     c.transform.position = new Vector3(i, 0, u);
+                    Debug.Log("instantiated Map Cell at " + i + ", " + u);
                     c.GetComponent<MeshRenderer>().material = materials[tile.terrainType];
                     if (tile.forest)
                     {

@@ -23,7 +23,7 @@ GameObject:
   - component: {fileID: 23161839036016374}
   - component: {fileID: 65320190510677174}
   - component: {fileID: 114538469353532488}
-  m_Layer: 0
+  m_Layer: 20
   m_Name: TilePrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
