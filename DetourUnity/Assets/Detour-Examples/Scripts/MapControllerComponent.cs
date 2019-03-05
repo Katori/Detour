@@ -45,6 +45,7 @@ namespace Detour.Examples.Client
 
         internal void RenderMap(TileData[,] TileArray, Vector2Int MapSize)
         {
+            Debug.Log("rendering map of size: "+TileArray.GetLength(0)+" by " + TileArray.GetLength(1));
             tiles = TileArray;
             for (int i = 0; i < MapSize.x; i++)
             {
@@ -63,6 +64,7 @@ namespace Detour.Examples.Client
                     l.Position = new Vector2Int(i, u);
                 }
             }
+            Debug.Log("Map rendered, setting map container position");
             MapContainer.position = new Vector3(MapSize.x / -2, 0, MapSize.y/-2);
         }
 
