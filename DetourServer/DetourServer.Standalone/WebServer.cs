@@ -66,29 +66,27 @@ namespace DetourServer
         {
             CancellationTokenSource source = new CancellationTokenSource();
 
-            //try
-            //{
-                if (_isDisposed)
-                {
-                    return;
-                }
+            if (_isDisposed)
+            {
+                return;
+            }
 
-                // this worker thread stays alive until either of the following happens:
-                // Client sends a close conection request OR
-                // An unhandled exception is thrown OR
-                // The server is disposed
+            // this worker thread stays alive until either of the following happens:
+            // Client sends a close conection request OR
+            // An unhandled exception is thrown OR
+            // The server is disposed
 
-                // get a secure or insecure stream
-                Stream stream = tcpClient.GetStream();
+            // get a secure or insecure stream
+            Stream stream = tcpClient.GetStream();
             if (Secure)
             {
                 var sslStream = new SslStream(stream, false, CertVerificationCallback);
                 await sslStream.AuthenticateAsServerAsync(_sslConfig.Certificate, _sslConfig.ClientCertificateRequired, _sslConfig.EnabledSslProtocols, _sslConfig.CheckCertificateRevocation);
                 stream = sslStream;
             }
-                WebSocketHttpContext context = await _webSocketServerFactory.ReadHttpHeaderFromStreamAsync(stream);
-                if (context.IsWebSocketRequest)
-                {
+            WebSocketHttpContext context = await _webSocketServerFactory.ReadHttpHeaderFromStreamAsync(stream);
+            if (context.IsWebSocketRequest)
+            {
                 if (context.Path == _GamePath)
                 {
 
@@ -104,11 +102,11 @@ namespace DetourServer
                 {
                     Console.WriteLine("path not match");
                 }
-                    
-                }
-                else
-                {
-                }
+
+            }
+            else
+            {
+            }
 
             //}
             //catch (ObjectDisposedException)
@@ -134,39 +132,11 @@ namespace DetourServer
             return true;
         }
 
-        public async Task RespondToWebSocketRequestAsync(WebSocket webSocket, CancellationToken token)
-        {
-            const int bufferLen = 4 * 1024 * 1024; // 4MB
-            ArraySegment<byte> buffer = new ArraySegment<byte>(new byte[bufferLen]);
-
-            while (true)
-            {
-                WebSocketReceiveResult result = await webSocket.ReceiveAsync(buffer, token);
-                if (result.MessageType == WebSocketMessageType.Close)
-                {
-                    break;
-                }
-
-                if (result.Count > bufferLen)
-                {
-                    await webSocket.CloseAsync(WebSocketCloseStatus.MessageTooBig,
-                        $"Web socket frame cannot exceed buffer size of {bufferLen:#,##0} bytes. Send multiple frames instead.",
-                        token);
-                    break;
-                }
-
-                // just echo the message back to the client
-                ArraySegment<byte> toSend = new ArraySegment<byte>(buffer.Array, buffer.Offset, result.Count);
-                await webSocket.SendAsync(toSend, WebSocketMessageType.Binary, true, token);
-            }
-        }
-
         public async Task Listen(int port)
         {
             try
             {
-                IPAddress localAddress = IPAddress.Any;
-                _listener = new TcpListener(localAddress, port);
+                _listener = TcpListener.Create(port);
                 _listener.Start();
                 Console.WriteLine($"Server started listening on port {port}");
                 while (true)
