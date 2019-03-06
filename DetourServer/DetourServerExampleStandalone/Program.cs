@@ -29,7 +29,6 @@ namespace DetourServerExample
             Server.ClientRemoved += Server_ClientRemoved;
             Server.ApplicationVersion = 0.1f;
             Server.DetourVersion = 0.2f;
-            //Task task = StandaloneServer.StartDetourServer();
 
             var hostBuilder = new HostBuilder().ConfigureServices(services =>
                 services.AddHostedService<ListenService>()
@@ -37,7 +36,6 @@ namespace DetourServerExample
                 {
                     configBuilder.AddJsonFile("appsettings.json");
                 });
-            //task.Wait();
             await hostBuilder.RunConsoleAsync();
         }
 
@@ -45,10 +43,7 @@ namespace DetourServerExample
         {
             var c = Server.AllClients[Address].StoredData["Player"] as PlayerDefinition;
             var b = netMsg as PlayerMoveMessage;
-            System.Console.WriteLine("player " + Address + " moving to " +b.PositionToOperateOn.x+ " " + b.PositionToOperateOn.y);
-            System.Console.WriteLine("moving from " + c.Position.x + " " + c.Position.y);
             var _dist = Vector2Int.Distance(c.Position, b.PositionToOperateOn);
-            System.Console.WriteLine("detected distance " + _dist);
             if (_dist < 4)
             {
                 c.Position = b.PositionToOperateOn;
@@ -64,8 +59,7 @@ namespace DetourServerExample
                     DetourVersion = Server.DetourVersion,
                     MessageType = (int)MessageTypes.PlayerMoveCommand
                 });
-                var p = Server.Rooms.Values.Where(x => x.RoomClients.ContainsKey(Address)).FirstOrDefault();
-                Server.SendToRoomExcept(p.RoomId, new List<string> { Address }, new PlayerMoveCommand
+                Server.SendToRoomExcept(Server.AllClients[Address].StoredData["Room"] as string, new List<string> { Address }, new PlayerMoveCommand
                 {
                     ApplicationVersion = Server.ApplicationVersion,
                     DetourVersion = Server.DetourVersion,
@@ -117,6 +111,7 @@ namespace DetourServerExample
             System.Console.WriteLine("spawn position: " + Pl.Position.x + " " + Pl.Position.y);
 
             Server.StoreClientData(Address, "Player", Pl);
+            Server.StoreClientData(Address, "Room", RoomId);
             Server.SendToRoomExcept(RoomId, new List<string>(new string[] { Address }), new ClientJoinedRoomMessage() {ApplicationVersion = Server.ApplicationVersion, DetourVersion = Server.DetourVersion, RoomId = RoomId, MessageType = (int)MessageTypes.ClientJoinedRoomMessage,  Player = Pl });
             var PlayerList = new List<PlayerDefinition>();
             foreach (var item in Server.Rooms[RoomId].RoomClients.Values)

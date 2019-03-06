@@ -88,7 +88,7 @@ namespace Detour.Examples.Client
         internal void Connect(string Name)
         {
             _Name = Name;
-            System.UriBuilder TestServerUri = new System.UriBuilder("ws", "localhost", 27416, "game");
+            System.UriBuilder TestServerUri = new System.UriBuilder("ws", "localhost", 27418, "game");
             Debug.Log(TestServerUri.Uri.ToString());
             conn.Connect(TestServerUri.Uri);
         }

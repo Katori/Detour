@@ -35,13 +35,16 @@ namespace DetourServer.Standalone
             using (WebServer server = new WebServer(_webSocketServerFactory, supportedSubProtocols, "/game"))
             {
                 server.Secure = config.Secure;
-                server._sslConfig = new WebServer.SslConfiguration
+                if (server.Secure)
                 {
-                    Certificate = new System.Security.Cryptography.X509Certificates.X509Certificate2(System.AppContext.BaseDirectory + "/certificate.pfx", config.CertificatePassword),
-                    CheckCertificateRevocation = false,
-                    ClientCertificateRequired = false,
-                    EnabledSslProtocols = System.Security.Authentication.SslProtocols.None
-                };
+                    server._sslConfig = new WebServer.SslConfiguration
+                    {
+                        Certificate = new System.Security.Cryptography.X509Certificates.X509Certificate2(System.AppContext.BaseDirectory + "/certificate.pfx", config.CertificatePassword),
+                        CheckCertificateRevocation = false,
+                        ClientCertificateRequired = false,
+                        EnabledSslProtocols = System.Security.Authentication.SslProtocols.None
+                    };
+                }
                 await server.Listen(config.Port);
             }
         }

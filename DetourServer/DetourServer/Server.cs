@@ -25,6 +25,8 @@ namespace DetourServer
 
         public static ConcurrentQueue<SendableMessage> MessagesToSend = new ConcurrentQueue<SendableMessage>();
 
+        public static bool UsingRoomHandling = false;
+
         public static void StoreClientData(string address, string v, dynamic Data)
         {
             if (AllClients[address].StoredData.ContainsKey(v))
@@ -39,6 +41,7 @@ namespace DetourServer
 
         public static void UseRoomHandling(System.Type RoomMessageType, RoomDefinition DefaultRoomType)
         {
+            UsingRoomHandling = true;
             RegisterHandler(10, RoomMessageType, RoomRequestReceived);
             RoomTypes.Add(DefaultRoomType.RoomType, DefaultRoomType);
         }
@@ -76,31 +79,29 @@ namespace DetourServer
         {
             System.Console.WriteLine("removing client");
             AllClients.Remove(clientContainer.Id);
-            var c = Rooms.Values;
-            foreach (var item in c)
+            if (UsingRoomHandling)
             {
-                // for each room
-                var p = item.RoomClients.Values.Where(x => x.Id == clientContainer.Id).ToList();
-                if (p.Count > 0)
+                var p = clientContainer.StoredData["Room"] as string;
+                if (Rooms.ContainsKey(p))
                 {
-                    // if player in room
-                    item.RoomClients.Remove(clientContainer.Id);
-                    foreach (var item2 in item.RoomClients.Values)
+                    Rooms[p].RoomClients.Remove(clientContainer.Id);
+                    foreach (var item in Rooms[p].RoomClients.Values)
                     {
                         Server.MessagesToSend.Enqueue(new SendableMessage
                         {
-                            Address = item2.Id,
+                            Address = item.Id,
                             Message = new PlayerRemovedMessage
                             {
                                 ApplicationVersion = Server.ApplicationVersion,
                                 DetourVersion = DetourVersion,
                                 MessageType = 5,
                                 Id = clientContainer.Id,
-                                RoomId = item.RoomId
+                                RoomId = p
                             }
                         });
                     }
                 }
+                
             }
             ClientRemoved?.Invoke(clientContainer.Id);
         }
