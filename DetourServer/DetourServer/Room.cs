@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 
 namespace DetourServer
 {
@@ -57,14 +55,16 @@ namespace DetourServer
 
         public void SendToAllExcept(List<string> addressesToExclude, DetourMessage message)
         {
-            var p = RoomClients.Where(x => addressesToExclude.Contains(x.Key) != true).ToList();
-            foreach (var item in p)
+            foreach (var item in RoomClients)
             {
-                Server.MessagesToSend.Enqueue(new SendableMessage
+                if (!addressesToExclude.Contains(item.Key))
                 {
-                    Address = item.Key,
-                    Message = message
-                });
+                    Server.MessagesToSend.Enqueue(new SendableMessage
+                    {
+                        Address = item.Key,
+                        Message = message
+                    });
+                }
             }
         }
     }
