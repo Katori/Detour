@@ -85,11 +85,9 @@ namespace Detour.Examples.Client
             conn.Connect(TestServerUri.Uri);
         }
 
-        private void RoomDataCatchUpReceived(DetourMessage netMsg)
+        private void RoomDataCatchUpReceived(ClientRoomDataCatchUp netMsg)
         {
-            var c = netMsg as ClientRoomDataCatchUp;
-            Debug.Log("received room catchup data");
-            foreach (var item in c.Players)
+            foreach (var item in netMsg.Players)
             {
                 Debug.Log("adding player: " + item.Name);
                 AddPlayer(item);
@@ -99,22 +97,15 @@ namespace Detour.Examples.Client
                 Id = "0",
                 Name = _Name,
                 HasMoved = false,
-                StartPosition = c.ClientStartPosition
+                StartPosition = netMsg.ClientStartPosition
             });
-            foreach (var Q in c.MapTiles)
-            {
-                Debug.Log("got a " + Q.terrainType);
-            }
-            ExampleGameController.Instance.SetTiles(c.MapTiles);
-            Debug.Log("Map size detected: " + c.MapSize);
-            MapControllerComponent.Instance.RenderMap(c.MapTiles, c.MapSize);
+            ExampleGameController.Instance.SetTiles(netMsg.MapTiles);
+            MapControllerComponent.Instance.RenderMap(netMsg.MapTiles, netMsg.MapSize);
         }
 
-        private void OnClientJoinedRoom(DetourMessage netMsg)
+        private void OnClientJoinedRoom(ClientJoinedRoomMessage netMsg)
         {
-            Debug.Log("Received RoomJoin");
-            var c = netMsg as ClientJoinedRoomMessage;
-            AddPlayer(c.Player);
+            AddPlayer(netMsg.Player);
         }
 
         private void Conn_Connected()
@@ -126,10 +117,9 @@ namespace Detour.Examples.Client
             UIController.Instance.HideConnectionUI();
         }
 
-        private void OnServerSentTestMessage(DetourMessage msg)
+        private void OnServerSentTestMessage(TestMessage msg)
         {
-            var testMsg = msg as TestMessage;
-            Debug.Log("Received TestString: " + testMsg.TestString);
+            Debug.Log("received test string: " + msg.TestString);
         }
 
         [System.Serializable]
