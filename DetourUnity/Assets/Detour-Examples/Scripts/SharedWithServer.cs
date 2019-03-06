@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using DetourClient;
 using UnityEngine;
+using UnityEngine.Scripting;
 
 namespace Detour.Examples.Client
 {
@@ -24,7 +25,7 @@ namespace Detour.Examples.Client
     {
         public List<PlayerDefinition> Players;
         public int ClientStartPosition;
-        public Vector2Int MapSize;
+        public SimpleVector2Int MapSize;
         public TileData[,] MapTiles;
     }
 
@@ -60,6 +61,19 @@ namespace Detour.Examples.Client
         {
             this.terrainType = terrainType;
             this.forest = forest;
+        }
+    }
+
+    [System.Serializable, Preserve]
+    public class SimpleVector2Int
+    {
+        public int x;
+        public int y;
+
+        public SimpleVector2Int(int x, int y)
+        {
+            this.x = x;
+            this.y = y;
         }
     }
 }

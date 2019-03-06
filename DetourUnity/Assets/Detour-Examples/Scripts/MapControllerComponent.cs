@@ -43,7 +43,7 @@ namespace Detour.Examples.Client
         //    //InitMapVisualisation();
         //}
 
-        internal void RenderMap(TileData[,] TileArray, Vector2Int MapSize)
+        internal void RenderMap(TileData[,] TileArray, SimpleVector2Int MapSize)
         {
             Debug.Log("rendering map of size: "+TileArray.GetLength(0)+" by " + TileArray.GetLength(1));
             Debug.Log("asked to render for: " + MapSize.x + ", " + MapSize.y);

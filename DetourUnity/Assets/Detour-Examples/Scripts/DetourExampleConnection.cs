@@ -33,19 +33,18 @@ namespace Detour.Examples.Client
             {
                 Destroy(gameObject);
             }
-            conn.RegisterHandler(1, typeof(TestMessage), OnServerSentTestMessage);
-            conn.RegisterHandler((int)MessageTypes.ClientJoinedRoomMessage, typeof(ClientJoinedRoomMessage), OnClientJoinedRoom);
-            conn.RegisterHandler((int)MessageTypes.ClientRoomDataCatchUp, typeof(ClientRoomDataCatchUp), RoomDataCatchUpReceived);
-            conn.RegisterHandler(5, typeof(PlayerRemovedMessage), PlayerRemoved);
+            conn.RegisterHandler<TestMessage>(1, typeof(TestMessage), OnServerSentTestMessage);
+            conn.RegisterHandler<ClientJoinedRoomMessage>((int)MessageTypes.ClientJoinedRoomMessage, typeof(ClientJoinedRoomMessage), OnClientJoinedRoom);
+            conn.RegisterHandler<ClientRoomDataCatchUp>((int)MessageTypes.ClientRoomDataCatchUp, typeof(ClientRoomDataCatchUp), RoomDataCatchUpReceived);
+            conn.RegisterHandler<PlayerRemovedMessage>(5, typeof(PlayerRemovedMessage), PlayerRemoved);
             conn.Connected += Conn_Connected;
             conn.Disconnected += Conn_Disconnected;
         }
 
-        private void PlayerRemoved(DetourMessage netMsg)
+        private void PlayerRemoved(PlayerRemovedMessage netMsg)
         {
-            var c = netMsg as PlayerRemovedMessage;
-            Debug.Log("removing player: " + c.Id);
-            RemovePlayer(c.Id);
+            Debug.Log("removing player: " + netMsg.Id);
+            RemovePlayer(netMsg.Id);
         }
 
         private void RemovePlayer(string id)
@@ -92,6 +91,7 @@ namespace Detour.Examples.Client
             Debug.Log("received room catchup data");
             foreach (var item in c.Players)
             {
+                Debug.Log("adding player: " + item.Name);
                 AddPlayer(item);
             }
             AddPlayer(new PlayerDefinition
@@ -101,6 +101,10 @@ namespace Detour.Examples.Client
                 HasMoved = false,
                 StartPosition = c.ClientStartPosition
             });
+            foreach (var Q in c.MapTiles)
+            {
+                Debug.Log("got a " + Q.terrainType);
+            }
             ExampleGameController.Instance.SetTiles(c.MapTiles);
             Debug.Log("Map size detected: " + c.MapSize);
             MapControllerComponent.Instance.RenderMap(c.MapTiles, c.MapSize);

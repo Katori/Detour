@@ -76,9 +76,18 @@ namespace DetourClient
             EnqueuedMessagesToSend.Add(Message);
         }
 
-        public void RegisterHandler(int MessageType, System.Type MessageClass, MessageEventHandler Handler)
+        public void RegisterHandler<T>(int MessageType, System.Type MessageClass, System.Action<T> Handler) where T: DetourMessage
         {
-            MessageTypeToMessageDefinition.Add(MessageType, new MessageDefinition { Type = MessageClass, EventHandler = Handler });
+            
+            MessageTypeToMessageDefinition[MessageType] = new MessageDefinition
+            {
+                Type = MessageClass,
+                EventHandler = networkMessage =>
+                {
+                    T message = networkMessage as T;
+                    Handler(message);
+                }
+            };
         }
 
         public void Send()
