@@ -37,8 +37,17 @@ namespace Detour.Examples.Client
             conn.RegisterHandler<ClientJoinedRoomMessage>((int)MessageTypes.ClientJoinedRoomMessage, typeof(ClientJoinedRoomMessage), OnClientJoinedRoom);
             conn.RegisterHandler<ClientRoomDataCatchUp>((int)MessageTypes.ClientRoomDataCatchUp, typeof(ClientRoomDataCatchUp), RoomDataCatchUpReceived);
             conn.RegisterHandler<PlayerRemovedMessage>(5, typeof(PlayerRemovedMessage), PlayerRemoved);
+            conn.RegisterHandler<PlayerMoveCommand>((int)MessageTypes.PlayerMoveCommand, typeof(PlayerMoveCommand), PlayerMoved);
             conn.Connected += Conn_Connected;
             conn.Disconnected += Conn_Disconnected;
+        }
+
+        private void PlayerMoved(PlayerMoveCommand msg)
+        {
+            Debug.Log("received move command for: " + msg.PlayerId);
+            Players[msg.PlayerId].Position = msg.PositionToMoveTo;
+            var _realPos = MapControllerComponent.Instance.MapToWorldPosition(new Vector2(msg.PositionToMoveTo.x, msg.PositionToMoveTo.y));
+            PlayerObjects[msg.PlayerId].transform.position = new Vector3(_realPos.x, 0, _realPos.y);
         }
 
         private void PlayerRemoved(PlayerRemovedMessage netMsg)
@@ -87,6 +96,8 @@ namespace Detour.Examples.Client
 
         private void RoomDataCatchUpReceived(ClientRoomDataCatchUp netMsg)
         {
+            ExampleGameController.Instance.SetTiles(netMsg.MapTiles);
+            MapControllerComponent.Instance.RenderMap(netMsg.MapTiles, netMsg.MapSize);
             foreach (var item in netMsg.Players)
             {
                 Debug.Log("adding player: " + item.Name);
@@ -97,10 +108,8 @@ namespace Detour.Examples.Client
                 Id = "0",
                 Name = _Name,
                 HasMoved = false,
-                StartPosition = netMsg.ClientStartPosition
+                Position = netMsg.ClientStartPosition
             });
-            ExampleGameController.Instance.SetTiles(netMsg.MapTiles);
-            MapControllerComponent.Instance.RenderMap(netMsg.MapTiles, netMsg.MapSize);
         }
 
         private void OnClientJoinedRoom(ClientJoinedRoomMessage netMsg)
@@ -139,12 +148,18 @@ namespace Detour.Examples.Client
             Players.Add(PlayerToAdd.Id, PlayerToAdd);
             var c = Instantiate(PlayerPrefab);
             PlayerObjects.Add(PlayerToAdd.Id, c);
-            if (!PlayerToAdd.HasMoved)
+            Debug.Log(PlayerToAdd.Position.x + " " + PlayerToAdd.Position.y);
+            var _spawnPos = MapControllerComponent.Instance.MapToWorldPosition(new Vector2(PlayerToAdd.Position.x, PlayerToAdd.Position.y));
+            PlayerObjects[PlayerToAdd.Id].transform.position = new Vector3(_spawnPos.x, 0, _spawnPos.y);
+            if (PlayerToAdd.Id == "0")
             {
-                var b = StartPoints[PlayerToAdd.StartPosition];
-                PlayerToAdd.Position = new Vector2(b.position.x, b.position.z);
+                CameraController.Instance.PlayerToWatch = c.transform;
             }
-            PlayerObjects[PlayerToAdd.Id].transform.position = new Vector3(PlayerToAdd.Position.x, 0, PlayerToAdd.Position.y);
+        }
+
+        internal void Send(DetourMessage msg)
+        {
+            conn.SendMessage(msg);
         }
     }
 }

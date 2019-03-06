@@ -28,7 +28,12 @@ namespace Detour.Examples.Client
         internal void ClickedCell(Vector2Int Position)
         {
             var c = tiles[Position.x, Position.y];
-            Debug.Log("Clicked a " + c.terrainType + "with " + c.forest + " forest");
+            //var p = MapControllerComponent.Instance.WorldToMapPosition(Position);
+            DetourExampleConnection.Instance.Send(new PlayerMoveMessage
+            {
+                MessageType = (int)MessageTypes.PlayerMoveMessage,
+                PositionToOperateOn = new SimpleVector2Int(Position.x, Position.y)
+            });
         }
     }
 }

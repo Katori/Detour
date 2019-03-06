@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using DetourServer;
+using Newtonsoft.Json;
 
 namespace DetourServerExample
 {
@@ -9,7 +10,9 @@ namespace DetourServerExample
         ClientSentTestMessage = 1,
         RoomRequestMessage = 10,
         ClientJoinedRoomMessage = 15,
-        ClientRoomDataCatchUp = 16
+        ClientRoomDataCatchUp = 16,
+        PlayerMoveMessage = 20,
+        PlayerMoveCommand = 21
     }
 
     [System.Serializable]
@@ -22,9 +25,22 @@ namespace DetourServerExample
     public class ClientRoomDataCatchUp : DetourMessage
     {
         public List<PlayerDefinition> Players;
-        public int ClientStartPosition;
+        public Vector2Int ClientStartPosition;
         public Vector2Int MapSize;
         public TileData[,] MapTiles;
+    }
+
+    [System.Serializable]
+    public class PlayerMoveMessage : DetourMessage
+    {
+        public Vector2Int PositionToOperateOn;
+    }
+
+    [System.Serializable]
+    public class PlayerMoveCommand : DetourMessage
+    {
+        public string PlayerId;
+        public Vector2Int PositionToMoveTo;
     }
 
     [System.Serializable]
@@ -32,9 +48,8 @@ namespace DetourServerExample
     {
         public string Id;
         public string Name;
-        public Vector2 Position;
+        public Vector2Int Position;
         public bool HasMoved;
-        public int StartPosition;
     }
 
     [System.Serializable]
@@ -80,6 +95,30 @@ namespace DetourServerExample
     {
         public int x;
         public int y;
+
+        [JsonIgnore]
+        public float Magnitude
+        {
+            get
+            {
+                return (float)System.Math.Sqrt(this.x * this.x + this.y * this.y);
+            }
+        }
+
+        public static float Distance(Vector2Int a, Vector2Int b)
+        {
+            return (a - b).Magnitude;
+        }
+
+        static public Vector2Int operator +(Vector2Int a, Vector2Int b)
+        {
+            return new Vector2Int(a.x+b.x, a.y+b.y);
+        }
+
+        static public Vector2Int operator -(Vector2Int a, Vector2Int b)
+        {
+            return new Vector2Int(a.x - b.x, a.y - b.y);
+        }
 
         public Vector2Int(int x, int y)
         {

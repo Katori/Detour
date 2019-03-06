@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Text;
 using UnityEngine;
+using System;
 
 namespace DetourClient
 {
@@ -47,6 +48,11 @@ namespace DetourClient
         {
             ConnectionActive = false;
             Disconnected.Invoke();
+        }
+
+        public void RegisterHandler<T>(int playerMoveCommand, object playerMoved)
+        {
+            throw new NotImplementedException();
         }
 
         private void Client_Connected()

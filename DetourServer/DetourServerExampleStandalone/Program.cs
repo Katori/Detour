@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using DetourServer;
 using DetourServer.Standalone;
@@ -11,9 +12,18 @@ namespace DetourServerExample
     {
         static System.Random RanGen = new System.Random();
 
+        static List<Vector2Int> SpawnPositions = new List<Vector2Int>
+        {
+            new Vector2Int(3, 3),
+            new Vector2Int(6, 6),
+            new Vector2Int(1, 5),
+            new Vector2Int(9, 9)
+        };
+
         public static async Task Main(string[] args)
         {
             Server.RegisterHandler((int)MessageTypes.ClientSentTestMessage, typeof(ClientSentTestMessage), OnClientSentTestMessage);
+            Server.RegisterHandler((int)MessageTypes.PlayerMoveMessage, typeof(PlayerMoveMessage), PlayerMoved);
             Server.UseRoomHandling(typeof(ClientRequestingRoomJoin), new RoomDefinition {RoomType = "Default", RoomCapacity = 100, StartPoints = 4, OnRoomJoined = OnClientJoinedRoom, OnRoomInitialized = OnRoomInit });
             Server.ClientRemoved += Server_ClientRemoved;
             Server.ApplicationVersion = 0.1f;
@@ -25,6 +35,41 @@ namespace DetourServerExample
                 .AddHostedService<SendService>());
             //task.Wait();
             await hostBuilder.RunConsoleAsync();
+        }
+
+        private static void PlayerMoved(string Address, DetourMessage netMsg)
+        {
+            var c = Server.AllClients[Address].StoredData["Player"] as PlayerDefinition;
+            var b = netMsg as PlayerMoveMessage;
+            System.Console.WriteLine("player " + Address + " moving to " +b.PositionToOperateOn.x+ " " + b.PositionToOperateOn.y);
+            System.Console.WriteLine("moving from " + c.Position.x + " " + c.Position.y);
+            var _dist = Vector2Int.Distance(c.Position, b.PositionToOperateOn);
+            System.Console.WriteLine("detected distance " + _dist);
+            if (_dist < 4)
+            {
+                c.Position = b.PositionToOperateOn;
+                if (!c.HasMoved)
+                {
+                    c.HasMoved = true;
+                }
+                Server.SendMessage(Address, new PlayerMoveCommand
+                {
+                    PlayerId = "0",
+                    PositionToMoveTo = c.Position,
+                    ApplicationVersion = Server.ApplicationVersion,
+                    DetourVersion = Server.DetourVersion,
+                    MessageType = (int)MessageTypes.PlayerMoveCommand
+                });
+                var p = Server.Rooms.Values.Where(x => x.RoomClients.ContainsKey(Address)).FirstOrDefault();
+                Server.SendToRoomExcept(p.RoomId, new List<string> { Address }, new PlayerMoveCommand
+                {
+                    ApplicationVersion = Server.ApplicationVersion,
+                    DetourVersion = Server.DetourVersion,
+                    MessageType = (int)MessageTypes.PlayerMoveCommand,
+                    PlayerId = Address,
+                    PositionToMoveTo = c.Position
+                });
+            }
         }
 
         private static void OnRoomInit(string RoomId, string RoomType)
@@ -56,18 +101,17 @@ namespace DetourServerExample
 
         private static void OnClientJoinedRoom(string Address, string RoomId, DetourMessage RoomMessage)
         {
-            System.Console.WriteLine("made it to roomjoined ");
             var p = RoomMessage as ClientRequestingRoomJoin;
             var _startPos = RanGen.Next(0, Server.Rooms[RoomId].RoomStartPoints);
             var Pl = new PlayerDefinition
             {
                 Id = Address,
                 Name = p.Name,
-                Position = new Vector2(1, 1),
+                Position = SpawnPositions[_startPos],
                 HasMoved = false,
-                StartPosition = _startPos
             };
-            
+            System.Console.WriteLine("spawn position: " + Pl.Position.x + " " + Pl.Position.y);
+
             Server.StoreClientData(Address, "Player", Pl);
             Server.SendToRoomExcept(RoomId, new List<string>(new string[] { Address }), new ClientJoinedRoomMessage() {ApplicationVersion = Server.ApplicationVersion, DetourVersion = Server.DetourVersion, RoomId = RoomId, MessageType = (int)MessageTypes.ClientJoinedRoomMessage,  Player = Pl });
             var PlayerList = new List<PlayerDefinition>();
@@ -84,11 +128,10 @@ namespace DetourServerExample
                 RoomId = RoomId,
                 MessageType = (int)MessageTypes.ClientRoomDataCatchUp,
                 Players = PlayerList,
-                ClientStartPosition = _startPos,
+                ClientStartPosition = SpawnPositions[_startPos],
                 MapSize = Server.Rooms[RoomId].RoomData["MapSize"] as Vector2Int,
                 MapTiles = Server.Rooms[RoomId].RoomData["TileData"] as TileData[,]
             });
-            System.Console.WriteLine("sent roomdatacatchup message");
         }
 
         private static void OnClientSentTestMessage(string Address, DetourMessage msg)

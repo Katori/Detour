@@ -11,7 +11,9 @@ namespace Detour.Examples.Client
         ClientSentTestMessage = 1,
         RoomRequestMessage = 10,
         ClientJoinedRoomMessage = 15,
-        ClientRoomDataCatchUp = 16
+        ClientRoomDataCatchUp = 16,
+        PlayerMoveMessage = 20,
+        PlayerMoveCommand = 21
     }
 
     [System.Serializable]
@@ -24,9 +26,22 @@ namespace Detour.Examples.Client
     public class ClientRoomDataCatchUp : DetourMessage
     {
         public List<PlayerDefinition> Players;
-        public int ClientStartPosition;
+        public SimpleVector2Int ClientStartPosition;
         public SimpleVector2Int MapSize;
         public TileData[,] MapTiles;
+    }
+
+    [System.Serializable]
+    public class PlayerMoveMessage : DetourMessage
+    {
+        public SimpleVector2Int PositionToOperateOn;
+    }
+
+    [System.Serializable]
+    public class PlayerMoveCommand : DetourMessage
+    {
+        public string PlayerId;
+        public SimpleVector2Int PositionToMoveTo;
     }
 
     [System.Serializable]
@@ -34,9 +49,8 @@ namespace Detour.Examples.Client
     {
         public string Id;
         public string Name;
-        public Vector2 Position;
+        public SimpleVector2Int Position;
         public bool HasMoved;
-        public int StartPosition;
     }
 
     [System.Serializable]

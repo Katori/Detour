@@ -52,5 +52,15 @@ namespace Detour.Examples.Client
             }
             MapContainer.position = new Vector3(MapSize.x / -2, 0, MapSize.y/-2);
         }
+
+        internal Vector2 WorldToMapPosition(Vector2 WorldPosition)
+        {
+            return WorldPosition - new Vector2(MapContainer.position.x, MapContainer.position.z);
+        }
+
+        internal Vector2 MapToWorldPosition(Vector2 MapPosition)
+        {
+            return MapPosition + new Vector2(MapContainer.position.x, MapContainer.position.z);
+        }
     }
 }
