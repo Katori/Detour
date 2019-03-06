@@ -46,7 +46,7 @@ namespace Detour.Examples.Client
         {
             Players[msg.PlayerId].Position = msg.PositionToMoveTo;
             var _realPos = MapControllerComponent.Instance.MapToWorldPosition(new Vector2(msg.PositionToMoveTo.x, msg.PositionToMoveTo.y));
-            PlayerObjects[msg.PlayerId].transform.position = new Vector3(_realPos.x, 0, _realPos.y) + Vector3.up;
+            PlayerObjects[msg.PlayerId].transform.position = new Vector3(_realPos.x, 0, _realPos.y) + (Vector3.up/2);
         }
 
         private void PlayerRemoved(PlayerRemovedMessage netMsg)
@@ -148,7 +148,7 @@ namespace Detour.Examples.Client
             var c = Instantiate(PlayerPrefab);
             PlayerObjects.Add(PlayerToAdd.Id, c);
             var _spawnPos = MapControllerComponent.Instance.MapToWorldPosition(new Vector2(PlayerToAdd.Position.x, PlayerToAdd.Position.y));
-            PlayerObjects[PlayerToAdd.Id].transform.position = new Vector3(_spawnPos.x, 0, _spawnPos.y) + Vector3.up;
+            PlayerObjects[PlayerToAdd.Id].transform.position = new Vector3(_spawnPos.x, 0, _spawnPos.y) + (Vector3.up/2);
             if (PlayerToAdd.Id == "0")
             {
                 CameraController.Instance.PlayerToWatch = c.transform;
