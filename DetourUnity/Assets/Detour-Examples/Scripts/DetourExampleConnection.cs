@@ -44,15 +44,14 @@ namespace Detour.Examples.Client
 
         private void PlayerMoved(PlayerMoveCommand msg)
         {
-            Debug.Log("received move command for: " + msg.PlayerId);
             Players[msg.PlayerId].Position = msg.PositionToMoveTo;
             var _realPos = MapControllerComponent.Instance.MapToWorldPosition(new Vector2(msg.PositionToMoveTo.x, msg.PositionToMoveTo.y));
-            PlayerObjects[msg.PlayerId].transform.position = new Vector3(_realPos.x, 0, _realPos.y);
+            PlayerObjects[msg.PlayerId].transform.position = new Vector3(_realPos.x, 0, _realPos.y) + Vector3.up;
         }
 
         private void PlayerRemoved(PlayerRemovedMessage netMsg)
         {
-            Debug.Log("removing player: " + netMsg.Id);
+            Debug.Log("Removing Player: " + netMsg.Id);
             RemovePlayer(netMsg.Id);
         }
 
@@ -82,7 +81,7 @@ namespace Detour.Examples.Client
 
         private void Conn_Disconnected()
         {
-            Debug.Log("disconn");
+            Debug.Log("Disconnected from server");
             UIController.Instance.ShowConnectionUI();
         }
 
@@ -100,7 +99,7 @@ namespace Detour.Examples.Client
             MapControllerComponent.Instance.RenderMap(netMsg.MapTiles, netMsg.MapSize);
             foreach (var item in netMsg.Players)
             {
-                Debug.Log("adding player: " + item.Name);
+                Debug.Log("Adding Player: " + item.Name);
                 AddPlayer(item);
             }
             AddPlayer(new PlayerDefinition
@@ -122,13 +121,13 @@ namespace Detour.Examples.Client
             conn.SendMessage(new DetourMessage {MessageType = 0 });
             conn.SendMessage(new TestMessage { MessageType = 1, TestString = "TestData" });
             conn.SendMessage(new ClientRequestingRoomJoin {MessageType = (int)MessageTypes.RoomRequestMessage, RequestedRoomType = "Default", Name = _Name });
-            Debug.Log("connected");
+            Debug.Log("Connected to server");
             UIController.Instance.HideConnectionUI();
         }
 
         private void OnServerSentTestMessage(TestMessage msg)
         {
-            Debug.Log("received test string: " + msg.TestString);
+            Debug.Log("Received test string: " + msg.TestString);
         }
 
         [System.Serializable]
@@ -148,9 +147,8 @@ namespace Detour.Examples.Client
             Players.Add(PlayerToAdd.Id, PlayerToAdd);
             var c = Instantiate(PlayerPrefab);
             PlayerObjects.Add(PlayerToAdd.Id, c);
-            Debug.Log(PlayerToAdd.Position.x + " " + PlayerToAdd.Position.y);
             var _spawnPos = MapControllerComponent.Instance.MapToWorldPosition(new Vector2(PlayerToAdd.Position.x, PlayerToAdd.Position.y));
-            PlayerObjects[PlayerToAdd.Id].transform.position = new Vector3(_spawnPos.x, 0, _spawnPos.y);
+            PlayerObjects[PlayerToAdd.Id].transform.position = new Vector3(_spawnPos.x, 0, _spawnPos.y) + Vector3.up;
             if (PlayerToAdd.Id == "0")
             {
                 CameraController.Instance.PlayerToWatch = c.transform;
