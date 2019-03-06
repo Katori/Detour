@@ -172,7 +172,7 @@ Transform:
   m_LocalScale: {x: 100, y: 100, z: 100}
   m_Children: []
   m_Father: {fileID: 2032190860}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!137 &18429793
 SkinnedMeshRenderer:
@@ -462,7 +462,7 @@ Transform:
   m_LocalScale: {x: 100, y: 100, z: 100}
   m_Children: []
   m_Father: {fileID: 2032190860}
-  m_RootOrder: 7
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!137 &87289507
 SkinnedMeshRenderer:
@@ -1767,7 +1767,7 @@ Transform:
   m_LocalScale: {x: 32.299904, y: 32.2999, z: 32.2999}
   m_Children: []
   m_Father: {fileID: 2032190860}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!137 &752045131
 SkinnedMeshRenderer:
@@ -2846,7 +2846,7 @@ Transform:
   m_LocalScale: {x: 86.15563, y: 100, z: 100}
   m_Children: []
   m_Father: {fileID: 2032190860}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!137 &1245593514
 SkinnedMeshRenderer:
@@ -3107,78 +3107,6 @@ Transform:
   m_Father: {fileID: 44759727}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1348638376
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 100006, guid: c05223cb56261234b98a4bd9097aa64d,
-    type: 3}
-  m_PrefabInternal: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1348638377}
-  - component: {fileID: 1348638378}
-  m_Layer: 0
-  m_Name: Camera
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1348638377
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 400006, guid: c05223cb56261234b98a4bd9097aa64d,
-    type: 3}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1348638376}
-  m_LocalRotation: {x: -0.03316805, y: -0.9610264, z: 0.24026538, w: -0.13266788}
-  m_LocalPosition: {x: -0.6270113, y: 1.8774235, z: 2.2682042}
-  m_LocalScale: {x: 100.00001, y: 100.00002, z: 99.99999}
-  m_Children: []
-  m_Father: {fileID: 2032190860}
-  m_RootOrder: 3
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!20 &1348638378
-Camera:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 2000000, guid: c05223cb56261234b98a4bd9097aa64d,
-    type: 3}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1348638376}
-  m_Enabled: 1
-  serializedVersion: 2
-  m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
-  m_projectionMatrixMode: 2
-  m_SensorSize: {x: 32, y: 18}
-  m_LensShift: {x: 0, y: 0}
-  m_FocalLength: 35
-  m_NormalizedViewPortRect:
-    serializedVersion: 2
-    x: 0
-    y: 0
-    width: 1
-    height: 1
-  near clip plane: 0.010000001
-  far clip plane: 10
-  field of view: 28.841547
-  orthographic: 0
-  orthographic size: 0.0002571441
-  m_Depth: 0
-  m_CullingMask:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_RenderingPath: -1
-  m_TargetTexture: {fileID: 0}
-  m_TargetDisplay: 0
-  m_TargetEye: 3
-  m_HDR: 1
-  m_AllowMSAA: 1
-  m_AllowDynamicResolution: 0
-  m_ForceIntoRT: 0
-  m_OcclusionCulling: 1
-  m_StereoConvergence: 10
-  m_StereoSeparation: 0.022
 --- !u!1 &1362854528
 GameObject:
   m_ObjectHideFlags: 0
@@ -4520,7 +4448,7 @@ Transform:
   m_LocalScale: {x: 37.40294, y: 37.40294, z: 37.40294}
   m_Children: []
   m_Father: {fileID: 2032190860}
-  m_RootOrder: 8
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!137 &1855173144
 SkinnedMeshRenderer:
@@ -5007,7 +4935,7 @@ Animator:
   m_GameObject: {fileID: 2032190858}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: c05223cb56261234b98a4bd9097aa64d, type: 3}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 4ca2aa20666ec6947b10d2507a92877e, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -5030,7 +4958,6 @@ Transform:
   - {fileID: 360116079}
   - {fileID: 772691577}
   - {fileID: 403304501}
-  - {fileID: 1348638377}
   - {fileID: 1245593513}
   - {fileID: 752045130}
   - {fileID: 18429792}
