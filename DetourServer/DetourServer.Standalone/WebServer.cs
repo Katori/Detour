@@ -3,8 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Net.Security;
 using System.Net.Sockets;
 using System.Net.WebSockets;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -18,6 +20,16 @@ namespace DetourServer
         private readonly HashSet<string> _supportedSubProtocols;
 
         private string _GamePath;
+        public bool Secure;
+        public SslConfiguration _sslConfig;
+
+        public class SslConfiguration
+        {
+            public System.Security.Cryptography.X509Certificates.X509Certificate2 Certificate;
+            public bool ClientCertificateRequired;
+            public System.Security.Authentication.SslProtocols EnabledSslProtocols;
+            public bool CheckCertificateRevocation;
+        }
 
         public WebServer(IWebSocketServerFactory webSocketServerFactory, IList<string> supportedSubProtocols = null, string GamePath = "/game")
         {
@@ -68,6 +80,12 @@ namespace DetourServer
 
                 // get a secure or insecure stream
                 Stream stream = tcpClient.GetStream();
+            if (Secure)
+            {
+                var sslStream = new SslStream(stream, false, CertVerificationCallback);
+                await sslStream.AuthenticateAsServerAsync(_sslConfig.Certificate, _sslConfig.ClientCertificateRequired, _sslConfig.EnabledSslProtocols, _sslConfig.CheckCertificateRevocation);
+                stream = sslStream;
+            }
                 WebSocketHttpContext context = await _webSocketServerFactory.ReadHttpHeaderFromStreamAsync(stream);
                 if (context.IsWebSocketRequest)
                 {
@@ -109,6 +127,11 @@ namespace DetourServer
             //    {
             //    }
             //}
+        }
+
+        private bool CertVerificationCallback(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
+        {
+            return true;
         }
 
         public async Task RespondToWebSocketRequestAsync(WebSocket webSocket, CancellationToken token)
