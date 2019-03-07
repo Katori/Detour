@@ -29,6 +29,10 @@ namespace DetourServer.Standalone
                         }
                     }
                 }
+                else
+                {
+                    Thread.Sleep(100);
+                }
             }
         }
     }
