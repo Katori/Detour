@@ -55,15 +55,32 @@ namespace DetourServer
 
         public void SendToAllExcept(List<string> addressesToExclude, DetourMessage message)
         {
-            foreach (var item in RoomClients)
+            if (addressesToExclude.Count == 1)
             {
-                if (!addressesToExclude.Contains(item.Key))
+                foreach (var item in RoomClients)
                 {
-                    Server.MessagesToSend.Enqueue(new SendableMessage
+                    if (item.Key != addressesToExclude[0])
                     {
-                        Address = item.Key,
-                        Message = message
-                    });
+                        Server.MessagesToSend.Enqueue(new SendableMessage
+                        {
+                            Address = item.Key,
+                            Message = message
+                        });
+                    }
+                }
+            }
+            else
+            {
+                foreach (var item in RoomClients)
+                {
+                    if (!addressesToExclude.Contains(item.Key))
+                    {
+                        Server.MessagesToSend.Enqueue(new SendableMessage
+                        {
+                            Address = item.Key,
+                            Message = message
+                        });
+                    }
                 }
             }
         }
