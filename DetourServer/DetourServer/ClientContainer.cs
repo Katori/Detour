@@ -43,15 +43,6 @@ namespace DetourServer
                     {
                         break;
                     }
-                    //if (EnqueuedMessagesToSend.Count > 0)
-                    //{
-                    //    dynamic[] c = new dynamic[EnqueuedMessagesToSend.Count];
-                    //    EnqueuedMessagesToSend.CopyTo(c);
-                    //    foreach (var item in c)
-                    //    {
-                            
-                    //    }
-                    //}
 
                     result = await Socket.ReceiveAsync(new System.ArraySegment<byte>(buffer), CancellationToken.None);
 

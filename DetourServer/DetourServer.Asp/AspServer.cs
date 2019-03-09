@@ -16,7 +16,7 @@ namespace DetourServer.Asp
 
         public async Task InvokeAsync(HttpContext context)
         {
-            if (context.Request.Path == "/ws")
+            if (context.Request.Path == "/game")
             {
                 if (context.WebSockets.IsWebSocketRequest)
                 {
